@@ -1,1 +1,56 @@
 /* You can add global styles to this file, and also import other style files */
+
+
+/*@import '~@angular/material/core/theming/prebuilt/indigo-pink.css';*/
+
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import '~animate.css/animate.min.css';
+@import '~https://fonts.googleapis.com/icon?family=Material+Icons';
+@import '~https://fonts.googleapis.com/icon?family=Roboto';
+
+/*@import "~@progress/kendo-theme-default/css/all";*/
+
+body {
+    font-family: Roboto;
+}
+
+.ui.secondary.pointing.menu {
+    border-bottom: 0px;
+}
+
+.ui.secondary.pointing.menu .item {
+    color: #d4d6d7 !important;
+    font-size: 18px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.ui.secondary.pointing.menu .item:hover {
+    border-color: rgba(253, 88, 42, 0.3) !important;
+}
+
+.ui.secondary.pointing.menu .item.active {
+    border-bottom-color: #fd582a;
+}
+
+.ui.secondary.pointing.menu .item.active:hover {
+    border-bottom-color: #fd582a !important;
+}
+
+.horizon-vertical-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vertical-center {
+    display: flex;
+    align-items: center;
+}
+
+.fullscreen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-width: 0px;
+}
