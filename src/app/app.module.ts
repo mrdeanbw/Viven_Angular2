@@ -9,6 +9,9 @@ import { AngularFireModule } from 'angularfire2';
 import { RouterModule } from '@angular/router';
 import { ModalModule } from 'ng2-bootstrap';
 import { OnsenModule, CUSTOM_ELEMENTS_SCHEMA } from 'angular2-onsenui';
+import { TourNgBootstrapModule, TourService } from 'ng2-tour';
+import { HotkeyModule } from 'angular2-hotkeys';
+import 'scroll-into-view-if-needed';
 
 import 'hammerjs';
 // import '../assets/js/impress.js';
@@ -91,8 +94,10 @@ import { BadgeComponent } from './badge/badge.component';
     }]),
     ModalModule.forRoot(),
     OnsenModule,
+    TourNgBootstrapModule,
+    HotkeyModule.forRoot(),
   ],
-  providers: [UserService],
+  providers: [UserService, TourService],
   bootstrap: [AppComponent],
   entryComponents: [BadgeComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

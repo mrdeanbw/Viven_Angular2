@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { UserService} from '../user.service';
+// import { TourService }  from 'ng2-tour';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  providers: [],
 })
 export class HeaderComponent implements OnInit {
   @Input() tabIndex: number;
@@ -14,8 +14,10 @@ export class HeaderComponent implements OnInit {
   photoURL: string;
   auth: any;
 
+  // constructor(private service: UserService, private tourService: TourService) {
   constructor(private service: UserService) {
     // console.log('constructor');
+  
     this.isLoggedin = this.service.isLoggedin();
 
     if (service.getCurrentUser() != null) {
@@ -40,6 +42,9 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngDoCheck() {
   }
 
   signout(){
