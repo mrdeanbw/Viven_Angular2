@@ -38,24 +38,30 @@
                     <img class="logo" src="assets/images/logo.png" />
                 </div>
 
-                <div tourAnchor="menu">
-                    <div style="display:inline-block; padding-left: 100px; ">
-                        <div class="ui secondary pointing menu">
+
+                <div style="display:inline-block; padding-left: 100px; ">
+                    <div class="ui secondary pointing menu">
+                        <div tourAnchor="homepage">
                             <a class="item {{tabIndex == 0 && 'active'}}" routerLink="/home">
-                            HOME
-                        </a>
+                                HOME
+                            </a>
+                        </div>
+                        <div tourAnchor="programs">
                             <a class="item {{tabIndex == 1 && 'active'}}" routerLink="/cases">
                             PROGRAMS
                         </a>
+                        </div>
+                        <div tourAnchor="profile">
                             <a class="item {{tabIndex == 2 && 'active'}}" routerLink="/profile">
                             YOUR PROFILE
                         </a>
-                            <a class="item {{tabIndex == 3 && 'active'}}" routerLink="/support">
+                        </div>
+                        <a class="item {{tabIndex == 3 && 'active'}}" routerLink="/support">
                             SUPPORT
                         </a>
-                        </div>
                     </div>
                 </div>
+
 
             </div>
 

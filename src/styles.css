@@ -10,6 +10,32 @@
 
 /*@import "~@progress/kendo-theme-default/css/all";*/
 
+.popover {
+    background: rgba(40, 51, 69, 0.5);
+}
+
+.popover:before {
+    border-top-color: rgba(40, 51, 69, 0.5);
+}
+
+.popover:after {
+    border-top-color: rgba(40, 51, 69, 0.5);
+}
+
+
+/*.popover .popover-title {
+    background: rgba(40, 51, 69, 1);
+}*/
+
+.popover .popover-content .tour-step-content {
+    color: white;
+}
+
+.popover .popover-content .tour-step-navigation button {
+    background: rgba(253, 88, 42, 0.7) !important;
+    color: white;
+}
+
 body {
     font-family: Roboto;
 }

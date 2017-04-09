@@ -23,6 +23,7 @@
             "../node_modules/onsenui/css/onsen-css-components.css",
             "../node_modules/onsenui/css/onsenui.css",
             "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+            "../node_modules/ng2-tour/src/style.css",
             "styles.css",
             "assets/css/app-theme.scss"
         ],
