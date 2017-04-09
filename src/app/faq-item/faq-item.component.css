@@ -1,0 +1,26 @@
+.container-fluid {
+    border-bottom-color: #adb1b4;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.question {
+    display: flex;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 28px;
+    align-items: center;
+    padding: 10px 10px 0px 10px;
+}
+
+.answer {
+    font-size: 16px;
+    line-height: 28px;
+    padding: 0px 10px 0px 10px;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}

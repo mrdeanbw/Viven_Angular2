@@ -1,0 +1,19 @@
+<div class="body">
+</div>
+<div class="grad"></div>
+<div class="container-fluid">
+    <div class="col-xs-11 login animated fadeInDown" style="text-align: center">
+        <a routerLink="/"><img src="assets/images/logo.png" style="margin-top: -150px; width: 100%; max-width: 300px" /></a>
+        <input type="text" placeholder="first name" name="firstname" [(ngModel)]="model.firstname"><br>
+        <input type="text" placeholder="last name" name="lastname" [(ngModel)]="model.lastname"><br>
+        <input type="email" placeholder="email" name="email" [(ngModel)]="model.email"><br>
+        <input type="password" placeholder="password" name="password" [(ngModel)]="model.password"><br>
+        <input type="button" value="Signup" (click)="signup()">
+        <div style="color: white; padding: 15px">
+            I already have an account. &nbsp; <a style="color: #fd582a" routerLink="/login">Cancel</a>
+        </div>
+        <div *ngIf="error!=null" style="color:blue">
+            {{error.message}}
+        </div>
+    </div>
+</div>

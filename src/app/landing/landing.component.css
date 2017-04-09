@@ -1,0 +1,49 @@
+.back {
+    position: relative;
+    width: 100%;
+    padding-top: 40%;
+    min-height: calc(100vh - 100px);
+    background: url(../../assets/images/land_back.png) center/cover no-repeat;
+}
+
+.back div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding-left: 10%;
+    padding-top: 8%;
+}
+
+.back .ourword span {
+    /*line-height: 85px;*/
+    color: rgb(40, 51, 69);
+}
+
+.back .employee {
+    font-size: 40px;
+}
+
+.back .tobe {
+    font-size: 50px;
+}
+
+.back .healthier {
+    font-size: 60px;
+    font-weight: bold;
+    color: #fd582a !important;
+}
+
+@media only screen and (max-width: 768px) {
+    .back {
+        height: calc(100vh - 85px);
+    }
+    .back .employee {
+        font-size: 20px;
+    }
+    .back .tobe {
+        font-size: 25px;
+    }
+    .back .healthier {
+        font-size: 30px;
+    }
+}

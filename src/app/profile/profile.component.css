@@ -1,0 +1,108 @@
+.container-fluid {
+    background-color: #c9cdd0;
+    min-height: calc(100vh - 100px);
+}
+
+.container-fluid .row {
+    padding-left: 12%;
+    padding-right: 12%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    min-height: 640px;
+}
+
+.header {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 40px;
+    background: #283345;
+    border-color: #283345;
+    color: white;
+    font-size: 18px;
+    padding-left: 3%;
+    padding-top: 7px;
+    z-index: 1;
+}
+
+.header::after {
+    position: absolute;
+    content: '';
+    top: 100%;
+    margin-left: -50px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #283345;
+}
+
+.contact-form {
+    border-width: 1px;
+    border-style: ridge;
+    border-color: gray;
+    background: #e6ebee;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    padding: 5% 10%;
+}
+
+.contact-form label {
+    font-size: 16px;
+    color: #adb0b2;
+}
+
+.contact-form button {
+    background: #fc582a;
+    color: #fcc5b6;
+    border-radius: 0px;
+}
+
+.h2 {
+    color: #283345;
+}
+
+.userInfo-tile {
+    display: flex;
+    background: #283345;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.userInfo-tile .value {
+    color: #c9cdd0;
+    font-size: 36px;
+}
+
+.userInfo-tile .key {
+    color: #c9cdd0;
+    font-size: 10px;
+}
+
+.userInfo-general {
+    border-right: 3px solid #c4c8cb;
+}
+
+.userInfo-general>div {
+    margin-bottom: 20px;
+}
+
+.profile {
+    display: flex;
+}
+
+.profile .info-panel {
+    height: 100%;
+}
+
+@media only screen and (max-width: 992px) {
+    .profile {
+        display: block;
+    }
+    .userInfo-general {
+        border-right: 0px solid #c4c8cb;
+    }
+}

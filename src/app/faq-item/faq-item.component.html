@@ -1,0 +1,12 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 question" data-toggle="collapse" attr.data-target="#{{id}}" (click)="qClick()">
+            {{q}}
+            <div class="spacer"> </div>
+            <md-icon> {{expanded ? 'expand_less' : 'expand_more'}} </md-icon>
+        </div>
+        <div class="col-xs-12 answer collapse" [attr.id]="id">
+            <br> {{a}}
+        </div>
+    </div>
+</div>

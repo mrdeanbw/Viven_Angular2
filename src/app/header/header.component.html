@@ -1,0 +1,105 @@
+<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="isLoggedin">
+    <button md-icon-button [mdMenuTriggerFor]="menu">
+        <md-icon>menu</md-icon>
+    </button>
+
+    <md-menu #menu="mdMenu">
+        <button md-menu-item routerLink="/home">
+            <md-icon>home</md-icon>
+            <span>HOME</span>
+        </button>
+        <button md-menu-item routerLink="/cases">
+            <md-icon>slideshow</md-icon>
+            <span>PROGRAMS</span>
+        </button>
+        <button md-menu-item routerLink="/profile">
+            <md-icon>person</md-icon>
+            <span>PROFILE</span>
+        </button>
+        <button md-menu-item routerLink="/support">
+            <md-icon>help_outline</md-icon>
+            <span>SUPPORT</span>
+        </button>
+        <hr>
+        <button md-menu-item (click)="signout()">
+            <md-icon>lock_outline</md-icon>
+            <span>LOGOUT</span>
+        </button>
+    </md-menu>
+    &nbsp; &nbsp;
+    <img class="logo" src="assets/images/logo.png" />
+</md-toolbar>
+
+<div class="container-fluid visible-lg visible-md" *ngIf="isLoggedin">
+    <div class="row">
+        <div class="col-xs-12 app-header">
+            <div class="left">
+                <div style="display:inline-block">
+                    <img class="logo" src="assets/images/logo.png" />
+                </div>
+                <div style="display:inline-block; padding-left: 100px; ">
+                    <div class="ui secondary pointing menu">
+                        <a class="item {{tabIndex == 0 && 'active'}}" routerLink="/home">
+                            HOME
+                        </a>
+                        <a class="item {{tabIndex == 1 && 'active'}}" routerLink="/cases">
+                            PROGRAMS
+                        </a>
+                        <a class="item {{tabIndex == 2 && 'active'}}" routerLink="/profile">
+                            YOUR PROFILE
+                        </a>
+                        <a class="item {{tabIndex == 3 && 'active'}}" routerLink="/support">
+                            SUPPORT
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div style="display:flex; align-items: center; justify-content: center">
+                    <div style="color:rgb(212,214,215); margin-right: 16px">{{userName}}</div>
+                    <div md-icon-button [mdMenuTriggerFor]="account" [ngStyle]="{'width': '70px', 'height': '70px', 'background': 'url(' + photoURL + ') center/cover no-repeat', 'border':'4px solid darkgray', 'border-radius': '5px'}">
+                    </div>
+                    <md-menu #account="mdMenu" y-axis="below" x-axis="before">
+                        <button md-menu-item (click)="signout()">
+                            <md-icon>lock_outline</md-icon>
+                            <span>LOGOUT</span>
+                        </button>
+                    </md-menu>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="!isLoggedin">
+    <button md-icon-button [mdMenuTriggerFor]="menu">
+        <md-icon>menu</md-icon>
+    </button>
+
+    <md-menu #menu="mdMenu">
+        <button md-menu-item routerLink="/login">
+            <md-icon>lock_open</md-icon>
+            <span>LOGIN</span>
+        </button>
+    </md-menu>
+    &nbsp; &nbsp;
+    <img class="logo" src="assets/images/logo.png" />
+</md-toolbar>
+
+<div class="container-fluid visible-lg visible-md" *ngIf="!isLoggedin">
+    <div class="row">
+        <div class="col-xs-12 app-header">
+            <div class="left">
+                <div style="display:inline-block">
+                    <img class="logo" src="assets/images/logo.png" />
+                </div>
+            </div>
+            <div class="right" style="padding-top: 60px">
+                <a class="ui orange button" style="font-size:16px; height:40px" routerLink="/login">LOGIN</a>
+            </div>
+        </div>
+    </div>
+</div>

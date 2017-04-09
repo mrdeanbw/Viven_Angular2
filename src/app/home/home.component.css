@@ -1,0 +1,50 @@
+.container-fluid {
+    background-color: #c9cdd0;
+    min-height: calc(100vh - 100px);
+}
+
+.container-fluid .row {
+    padding-left: 12%;
+    padding-right: 12%;
+    padding-top: 12vh;
+    padding-bottom: 12vh;
+}
+
+.section {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.section .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #283345;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.section .title span {
+    font-size: 24px;
+    color: #ddd;
+}
+
+.panel {
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 6px 10px 12px 2px #8a8a8a;
+    padding: 0;
+}
+
+.welcome {
+    font-size: 28px;
+    line-height: 1.3em;
+}
+
+@media only screen and (max-width: 768px) {
+    .welcome {
+        font-size: 16px;
+    }
+    .section .title span {
+        font-size: 18px;
+    }
+}

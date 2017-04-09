@@ -1,0 +1,29 @@
+.app-footer {
+    background-color: #283345;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    max-height: 220px;
+}
+
+.app-footer>h2 {
+    font-size: 18px;
+    text-align: right;
+    margin-top: 120px;
+    color: white;
+}
+
+@media only screen and (max-width: 992px) {
+    .app-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 85px;
+    }
+    .app-footer>h2 {
+        font-size: 16px;
+        margin: 0px;
+        padding: 0px;
+    }
+}

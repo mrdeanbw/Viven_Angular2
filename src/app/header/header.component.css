@@ -1,0 +1,55 @@
+.app-header {
+    background-color: #283345;
+    padding-left: 6%;
+    padding-right: 6%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.app-header .logo {
+    height: 160px;
+}
+
+md-toolbar {
+    background: #283345;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+md-toolbar .logo {
+    height: 50px;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.app-header .left {
+    float: left;
+}
+
+.app-header .right {
+    float: right;
+    padding-top: 45px;
+}
+
+.modal {
+    text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+    .modal:before {
+        display: inline-block;
+        vertical-align: middle;
+        content: " ";
+        height: 100%;
+    }
+}
+
+.modal-dialog {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
+}

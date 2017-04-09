@@ -1,0 +1,76 @@
+<app-header tabIndex="1"> </app-header>
+
+<!--<div class="container-fluid">
+    <div class="row">
+
+        <div *ngFor="let section of sections; let i=index" (swipeleft)="swipe(i,$event.">
+            {{section}}
+            <div *ngFor="let case of cases" class="col-xs-4" [style.display]="case.obj.case.category==='c'+(i+1) ? 'block':'none'">
+                <md-card class="case-card">
+                    <img md-card-image src="assets/images/{{case.obj.case.thumb}}">
+                    <md-card-content>
+                        <p>
+                            {{case.obj.case.title}}
+                        </p>
+                    </md-card-content>
+
+                </md-card>
+            </div>
+            <br>
+        </div>
+
+    </div>
+</div>-->
+
+<!--<button routerLink="/home"> home </button>-->
+
+<!--<div id="impress">-->
+<!--<div id="bored" class="step slide" data-x="-1000" data-y="-1500">-->
+<!--<div class="step slide" data-x="-1000" data-y="-1500" data-z="-1000" style="width:80vw; height:80vh">
+        <q>Aren’t you just <b>bored</b> with all those slides-based presentations?</q>
+    </div>
+    <div class="step slide" data-x="0" data-y="-1500" data-z="-2000" style="width:80vw; height:80vh">
+        <q>Don’t you think that presentations given <strong>in modern browsers</strong> shouldn’t <strong>copy the limits</strong> of ‘classic’ slide decks?</q>
+    </div>
+
+    <div class="step slide" data-x="1000" data-y="-1500" data-z="-3000" style="width:80vw; height:80vh">
+        <q>Would you like to <strong>impress your audience</strong> with <strong>stunning visualization</strong> of your talk?</q>
+    </div>-->
+<!--</div>-->
+
+<!--<div class="container-fluid" (swipeleft)="swipe($event.type)" (swiperight)="swipe($event.type)">-->
+<div class="container-fluid">
+    <div class="row animated fadeInUp" *ngFor="let section of (program | async)?.sections.categories; let i=index">
+
+        <!--<div class="col-xs-12 sections" style="padding-bottom: 40px; padding-top: 40px">-->
+        <div class="col-xs-12 sections" style="background-color:#283345">
+            <!--<span class="glyphicon glyphicon-chevron-left"></span>-->
+            <span class="spacer"></span>
+            <span class="title" style="color: #ddd"> {{ section }}</span>
+            <span class="spacer"></span>
+            <!--<a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a>-->
+        </div>
+
+        <div class="col-xs-12" style="background:rgba(255,255,255,0.5); padding:10px 25px;">
+            <ng-container *ngFor="let case of (program | async)?.cases">
+                <div *ngIf="case.obj.case.category==='c' +(i+1)" class="case-card col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <div style="width:100%; padding-top:90%">
+                        <div style="position:absolute; width:100%; height:100%; left:0; top:0">
+                            <md-card (click)="launchCase(programName, case.id, encryptedUid)" style="margin-left:3%; margin-right:3%; height:100%">
+                                <img md-card-image src="assets/images/{{case.obj.case.thumb}}">
+                                <md-card-content>
+                                    <p>
+                                        {{case.obj.case.title}}
+                                    </p>
+                                </md-card-content>
+                            </md-card>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+    </div>
+</div>
+
+<app-footer> </app-footer>
