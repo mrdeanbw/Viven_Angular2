@@ -14,12 +14,36 @@
     background: rgba(40, 51, 69, 0.5);
 }
 
-.popover:before {
+.popover.popover-top:before {
     border-top-color: rgba(40, 51, 69, 0.5);
 }
 
-.popover:after {
-    border-top-color: rgba(40, 51, 69, 0.5);
+.popover.popover-top:after {
+    border-top-color: rgba(40, 51, 69, 0);
+}
+
+.popover.popover-bottom:before {
+    border-bottom-color: white;
+}
+
+.popover.popover-bottom:after {
+    border-bottom-color: white;
+}
+
+.popover.popover-left:before {
+    border-left-color: rgba(40, 51, 69, 0.5);
+}
+
+.popover.popover-left:after {
+    border-left-color: rgba(40, 51, 69, 0);
+}
+
+.popover.popover-right:before {
+    border-right-color: rgba(40, 51, 69, 0.5);
+}
+
+.popover.popover-right:after {
+    border-right-color: rgba(40, 51, 69, 0);
 }
 
 
