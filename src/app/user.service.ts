@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
-import { Observable, Subject } from 'rxjs';
+// import { Subject } from 'rxjs';
+import { Observable} from 'rxjs';
 // import 'rxjs/add/operator/toPromise';
 import { Router } from '@angular/router';
 
@@ -9,13 +10,18 @@ import { Router } from '@angular/router';
 export class UserService {
   private isSignupProcess: boolean = false;
   private model: any;
-  private authState: Subject<any> = new Subject();
+  // private authState: Subject<any> = new Subject();
   private getUserURL = '/api/getVar';
   private headers = new Headers({'Content-Type': 'application/json'});
-  private currentAuth: any = null;
+  private signed: boolean = false;
+  // private currentAuth: any = null;
 
-  getAuthState(){
-    return this.authState;
+  // getAuthState(){
+  //   return this.authState;
+  // }
+
+  getAuth(){
+    return this.af.auth;
   }
 
   constructor(private af: AngularFire, private http: Http, private router: Router) {
@@ -33,17 +39,17 @@ export class UserService {
           }
         ).then(function(){
           this.isSignupProcess = false;
-          this.authState.next(auth);
-          this.currentAuth = auth;
+          // this.authState.next(auth);
+          // this.currentAuth = auth;
         }.bind(this));
       } else {
-        this.authState.next(auth);
-        this.currentAuth = auth;
+        // this.authState.next(auth);
+        // this.currentAuth = auth;
       }
 
     });
 
-    this.getAuthState().subscribe(auth => {
+     this.af.auth.subscribe(auth => {
       // console.log(auth);
       if (auth != null) {
         this.getUser(auth.auth.email).subscribe(function(user){
@@ -62,8 +68,10 @@ export class UserService {
             }
           }
         }.bind(this));
+        this.signed = true;
       } else {
         this.router.navigateByUrl('/');
+        this.signed = false;
       }
     });
   
@@ -157,8 +165,9 @@ export class UserService {
 		return this.af.auth.logout();
 	}
 
-  isLoggedin() {
-    return this.currentAuth != null;
+  isSigned() {
+    // return this.currentAuth != null;
+    return this.signed;
   }
 
   getEncryptedUid(uid) {
@@ -177,7 +186,7 @@ export class UserService {
       // .catch(this.handleError);
   }
 
-  getCurrentUser(){
-    return this.currentAuth;
-  }
+  // getCurrentUser(){
+  //   return this.currentAuth;
+  // }
 }

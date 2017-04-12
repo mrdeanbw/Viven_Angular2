@@ -1,4 +1,4 @@
-<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="isLoggedin">
+<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="isSigned">
     <button md-icon-button [mdMenuTriggerFor]="menu">
         <md-icon>menu</md-icon>
     </button>
@@ -30,7 +30,7 @@
     <img class="logo" src="assets/images/logo.png" />
 </md-toolbar>
 
-<div class="container-fluid visible-lg visible-md" *ngIf="isLoggedin">
+<div class="container-fluid visible-lg visible-md" *ngIf="isSigned">
     <div class="row">
         <div class="col-xs-12 app-header">
             <div class="left">
@@ -65,10 +65,13 @@
 
             </div>
 
+            {{(auth | async) == null}}
+
             <div class="right">
                 <div style="display:flex; align-items: center; justify-content: center">
-                    <div style="color:rgb(212,214,215); margin-right: 16px">{{userName}}</div>
-                    <div md-icon-button [mdMenuTriggerFor]="account" [ngStyle]="{'width': '70px', 'height': '70px', 'background': 'url(' + photoURL + ') center/cover no-repeat', 'border':'4px solid darkgray', 'border-radius': '5px'}">
+                    <!--<div style="color:rgb(212,214,215); margin-right: 16px">{{(userName)}}</div>-->
+                    <div style="color:rgb(212,214,215); margin-right: 16px">{{ (auth | async)?.auth.displayName }}</div>
+                    <div md-icon-button [mdMenuTriggerFor]="account" [ngStyle]="{'width': '70px', 'height': '70px', 'background': 'url(' + (auth | async)?.auth.photoURL + ') center/cover no-repeat', 'border':'4px solid darkgray', 'border-radius': '5px'}">
                     </div>
 
                     <div tourAnchor="login">
@@ -88,7 +91,7 @@
 </div>
 
 
-<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="!isLoggedin">
+<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="!isSigned">
     <button md-icon-button [mdMenuTriggerFor]="menu">
         <md-icon>menu</md-icon>
     </button>
@@ -103,7 +106,7 @@
     <img class="logo" src="assets/images/logo.png" />
 </md-toolbar>
 
-<div class="container-fluid visible-lg visible-md" *ngIf="!isLoggedin">
+<div class="container-fluid visible-lg visible-md" *ngIf="!isSigned">
     <div class="row">
         <div class="col-xs-12 app-header">
             <div class="left">

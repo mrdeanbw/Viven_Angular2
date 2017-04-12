@@ -22,27 +22,27 @@ export class ProfileComponent implements OnInit {
 
   constructor(private service: ProfileService, private user_service: UserService, public dialog: MdDialog) {
 
-    if(this.user_service.isLoggedin()){
-      this.uid = this.user_service.getCurrentUser().uid;
-      this.userName = this.user_service.getCurrentUser().auth.displayName;
-      this.photoURL = this.user_service.getCurrentUser().auth.photoURL;
-      this.getProfile();
-    }
+    // if(this.user_service.isSigned()){
+    //   this.uid = this.user_service.getCurrentUser().uid;
+    //   this.userName = this.user_service.getCurrentUser().auth.displayName;
+    //   this.photoURL = this.user_service.getCurrentUser().auth.photoURL;
+    //   this.getProfile();
+    // }
 
-    this.user_service.getAuthState().subscribe(function(authState){
-      if(authState != null) {
-        this.uid = authState.uid;
-        this.userName = authState.auth.displayName;
-        this.photoURL = authState.auth.photoURL;
-        this.getProfile();
-      }
-    }.bind(this));
+    // this.user_service.getAuthState().subscribe(function(authState){
+    //   if(authState != null) {
+    //     this.uid = authState.uid;
+    //     this.userName = authState.auth.displayName;
+    //     this.photoURL = authState.auth.photoURL;
+    //     this.getProfile();
+    //   }
+    // }.bind(this));
 
-    this.service.getAllBadges().subscribe(function(list){
-        this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
-        this.getProfile();
-        // console.log(this.allBadges);
-    }.bind(this));
+    // this.service.getAllBadges().subscribe(function(list){
+    //     this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
+    //     this.getProfile();
+    //     // console.log(this.allBadges);
+    // }.bind(this));
   }
 
   ngOnInit() {

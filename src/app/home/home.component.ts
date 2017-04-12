@@ -22,21 +22,21 @@ export class HomeComponent implements OnInit {
 
   constructor(private router: Router, private ps: ProfileService, private us: UserService) {
 
-    if(this.us.isLoggedin()){
-      this.uid = this.us.getCurrentUser().uid;
-      this.us.getEncryptedUid(this.uid).subscribe(value => this.encryptedUid = value);
-      this.getProfile();
-    }
+    // if(this.us.isSigned()){
+    //   this.uid = this.us.getCurrentUser().uid;
+    //   this.us.getEncryptedUid(this.uid).subscribe(value => this.encryptedUid = value);
+    //   this.getProfile();
+    // }
 
-    this.us.getAuthState().subscribe(function(authState){
-      if(authState != null) {
-        this.uid = authState.uid;
-        this.us.getEncryptedUid(this.uid).subscribe(value => this.encryptedUid = value);
-        this.getProfile();
-      }
-    }.bind(this));
+    // this.us.getAuthState().subscribe(function(authState){
+    //   if(authState != null) {
+    //     this.uid = authState.uid;
+    //     this.us.getEncryptedUid(this.uid).subscribe(value => this.encryptedUid = value);
+    //     this.getProfile();
+    //   }
+    // }.bind(this));
 
-    // this.percent = ps.getProgramProgressPercent(this.uid, "Cold and Flu");
+    // // this.percent = ps.getProgramProgressPercent(this.uid, "Cold and Flu");
   }
 
   getProfile(){

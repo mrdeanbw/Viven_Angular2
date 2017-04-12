@@ -25,22 +25,22 @@ export class CasesComponent implements OnInit, AfterViewInit {
   programName = "Cold and Flu";
 
   constructor(private case_service: CaseService, private user_service: UserService, private router: Router) {
-    this.program = this.case_service.getProgram(this.programName);
-    this.program.subscribe(function(obj){
-      this.cases = obj.cases;
-      // console.log(obj.cases)
-      this.sections = obj.sections.categories;
-    }.bind(this));
+    // this.program = this.case_service.getProgram(this.programName);
+    // this.program.subscribe(function(obj){
+    //   this.cases = obj.cases;
+    //   // console.log(obj.cases)
+    //   this.sections = obj.sections.categories;
+    // }.bind(this));
 
-    if(this.user_service.isLoggedin()){
-      this.user_service.getEncryptedUid(this.user_service.getCurrentUser().uid).subscribe(value => this.encryptedUid = value);
-    }
+    // if(this.user_service.isSigned()){
+    //   this.user_service.getEncryptedUid(this.user_service.getCurrentUser().uid).subscribe(value => this.encryptedUid = value);
+    // }
 
-    this.user_service.getAuthState().subscribe(function(authState){
-      if(authState != null) {
-        this.user_service.getEncryptedUid(authState.uid).subscribe(value => this.encryptedUid = value);
-      }
-    }.bind(this));
+    // this.user_service.getAuthState().subscribe(function(authState){
+    //   if(authState != null) {
+    //     this.user_service.getEncryptedUid(authState.uid).subscribe(value => this.encryptedUid = value);
+    //   }
+    // }.bind(this));
   }
 
   ngOnInit() {
