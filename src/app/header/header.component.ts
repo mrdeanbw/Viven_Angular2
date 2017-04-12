@@ -9,13 +9,13 @@ import { UserService} from '../user.service';
 })
 export class HeaderComponent implements OnInit {
   @Input() tabIndex: number;
-  isSigned: boolean;
+  // isSigned: boolean;
   // userName: string;
   // photoURL: string;
   auth: any;
 
   // constructor(private service: UserService, private tourService: TourService) {
-  constructor(private service: UserService) {
+  constructor(private us: UserService) {
     // console.log('constructor');
   
     // this.isSigned = this.service.isSigned();
@@ -26,16 +26,16 @@ export class HeaderComponent implements OnInit {
     // }
 
     // this.auth = this.service.getAuthState();
-    this.auth = this.service.getAuth();
-    this.auth.subscribe(function(auth){
-      // if(authState != null) {
-      //   this.userName = authState.auth.displayName;
-      //   this.photoURL = authState.auth.photoURL;
-      // }
+    this.auth = this.us.getAuth();
+    // this.auth.subscribe(function(auth){
+    //   if(authState != null) {
+    //     this.userName = authState.auth.displayName;
+    //     this.photoURL = authState.auth.photoURL;
+    //   }
 
-      this.isSigned = (auth != null);
-      // console.log(this.isSigned);
-    }.bind(this));
+    //   this.isSigned = (auth != null);
+    //   // console.log(this.isSigned);
+    // }.bind(this));
   }
 
   ngOnInit() {
@@ -45,6 +45,6 @@ export class HeaderComponent implements OnInit {
   }
 
   signout(){
-    this.service.signout();
+    this.us.signout();
   }
 }

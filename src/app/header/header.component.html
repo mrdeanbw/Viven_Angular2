@@ -1,4 +1,5 @@
-<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="isSigned">
+<!--<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="isSigned">-->
+<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="(auth | async) != null">
     <button md-icon-button [mdMenuTriggerFor]="menu">
         <md-icon>menu</md-icon>
     </button>
@@ -30,7 +31,8 @@
     <img class="logo" src="assets/images/logo.png" />
 </md-toolbar>
 
-<div class="container-fluid visible-lg visible-md" *ngIf="isSigned">
+<!--<div class="container-fluid visible-lg visible-md" *ngIf="isSigned">-->
+<div class="container-fluid visible-lg visible-md" *ngIf="(auth | async) != null">
     <div class="row">
         <div class="col-xs-12 app-header">
             <div class="left">
@@ -65,7 +67,7 @@
 
             </div>
 
-            {{(auth | async) == null}}
+            <!--{{(auth | async) == null}}-->
 
             <div class="right">
                 <div style="display:flex; align-items: center; justify-content: center">
@@ -91,7 +93,8 @@
 </div>
 
 
-<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="!isSigned">
+<!--<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="!isSigned">-->
+<md-toolbar color='primary' style="display:flex" class="visible-sm visible-xs" *ngIf="(auth | async) == null">
     <button md-icon-button [mdMenuTriggerFor]="menu">
         <md-icon>menu</md-icon>
     </button>
@@ -106,7 +109,8 @@
     <img class="logo" src="assets/images/logo.png" />
 </md-toolbar>
 
-<div class="container-fluid visible-lg visible-md" *ngIf="!isSigned">
+<!--<div class="container-fluid visible-lg visible-md" *ngIf="!isSigned">-->
+<div class="container-fluid visible-lg visible-md" *ngIf="(auth | async) == null">
     <div class="row">
         <div class="col-xs-12 app-header">
             <div class="left">

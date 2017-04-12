@@ -15,42 +15,41 @@ import 'scroll-into-view-if-needed';
 
 import 'hammerjs';
 // import '../assets/js/impress.js';
+import { firebaseConfig } from './../environments/firebase.config';
+
+import { UserService } from './user.service';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-// import { ContentComponent } from './content/content.component';
-// import { LandingComponent } from './landing/landing.component';
-// import { HomeComponent } from './home/home.component';
-// import { FooterComponent } from './footer/footer.component';
-// import { ProgramsComponent } from './programs/programs.component';
-// import { SupportComponent } from './support/support.component';
-// import { FaqItemComponent } from './faq-item/faq-item.component';
-
-import { firebaseConfig } from './../environments/firebase.config';
-// import { CasesComponent } from './cases/cases.component';
-// import { ProfileComponent } from './profile/profile.component';
-// import { LoginComponent } from './login/login.component';
-// import { SignupComponent } from './signup/signup.component';
-// import { BadgeComponent } from './badge/badge.component';
-
-import { UserService } from './user.service';
+import { ContentComponent } from './content/content.component';
+import { LandingComponent } from './landing/landing.component';
+import { HomeComponent } from './home/home.component';
+import { FooterComponent } from './footer/footer.component';
+import { ProgramsComponent } from './programs/programs.component';
+import { SupportComponent } from './support/support.component';
+import { FaqItemComponent } from './faq-item/faq-item.component';
+import { CasesComponent } from './cases/cases.component';
+import { ProfileComponent } from './profile/profile.component';
+import { LoginComponent } from './login/login.component';
+import { SignupComponent } from './signup/signup.component';
+import { BadgeComponent } from './badge/badge.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    // ContentComponent,
-    // LandingComponent,
-    // HomeComponent,
-    // FooterComponent,
-    // ProgramsComponent,
-    // SupportComponent,
-    // FaqItemComponent,
-    // CasesComponent,
-    // ProfileComponent,
-    // LoginComponent,
-    // SignupComponent,
-    // BadgeComponent,
+    ContentComponent,
+    LandingComponent,
+    HomeComponent,
+    FooterComponent,
+    ProgramsComponent,
+    SupportComponent,
+    FaqItemComponent,
+    CasesComponent,
+    ProfileComponent,
+    LoginComponent,
+    SignupComponent,
+    BadgeComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,39 +61,39 @@ import { UserService } from './user.service';
     AngularFireModule.initializeApp(firebaseConfig),
     RouterModule.forRoot([]),
     // ScrollViewModule,
-    // RouterModule.forRoot([
-    // {
-    //   path: 'login',
-    //   component: LoginComponent,
-    // },{
-    //   path: 'support',
-    //   component: SupportComponent,
-    // },
-    // {
-    //   path: 'cases',
-    //   component: CasesComponent,
-    // },
-    // {
-    //   path: 'profile',
-    //   component: ProfileComponent,
-    // },
-    // {
-    //   path: '',
-    //   component: LandingComponent,
-    // },
-    // {
-    //   path: 'home',
-    //   component: HomeComponent,
-    // },
-    // {
-    //   path: 'content',
-    //   component: ContentComponent,
-    // },
-    // {
-    //   path: 'signup',
-    //   component: SignupComponent,
-    // }
-    // ]),
+    RouterModule.forRoot([
+    {
+      path: 'login',
+      component: LoginComponent,
+    },{
+      path: 'support',
+      component: SupportComponent,
+    },
+    {
+      path: 'cases',
+      component: CasesComponent,
+    },
+    {
+      path: 'profile',
+      component: ProfileComponent,
+    },
+    {
+      path: '',
+      component: LandingComponent,
+    },
+    {
+      path: 'home',
+      component: HomeComponent,
+    },
+    {
+      path: 'content',
+      component: ContentComponent,
+    },
+    {
+      path: 'signup',
+      component: SignupComponent,
+    }
+    ]),
     ModalModule.forRoot(),
     OnsenModule,
     TourNgBootstrapModule,
@@ -102,7 +101,7 @@ import { UserService } from './user.service';
   ],
   providers: [UserService, TourService],
   bootstrap: [AppComponent],
-  // entryComponents: [BadgeComponent],
+  entryComponents: [BadgeComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule { }

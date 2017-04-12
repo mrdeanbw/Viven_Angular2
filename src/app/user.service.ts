@@ -46,7 +46,6 @@ export class UserService {
         // this.authState.next(auth);
         // this.currentAuth = auth;
       }
-
     });
 
      this.af.auth.subscribe(auth => {
@@ -138,9 +137,9 @@ export class UserService {
     });
   }
 
-  handleError(){
-    console.log('http error!');
-  }
+  // handleError(){
+  //   console.log('http error!');
+  // }
 
   createUser(user: any)
   {

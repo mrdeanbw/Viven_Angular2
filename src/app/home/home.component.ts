@@ -22,6 +22,14 @@ export class HomeComponent implements OnInit {
 
   constructor(private router: Router, private ps: ProfileService, private us: UserService) {
 
+    us.getAuth().subscribe(function(auth){
+      if(auth != null) {
+        this.uid = auth.uid;
+        us.getEncryptedUid(this.uid).subscribe(value => this.encryptedUid = value);
+        this.getProfile();
+      }
+    }.bind(this));
+
     // if(this.us.isSigned()){
     //   this.uid = this.us.getCurrentUser().uid;
     //   this.us.getEncryptedUid(this.uid).subscribe(value => this.encryptedUid = value);
@@ -57,7 +65,7 @@ export class HomeComponent implements OnInit {
       // fragment: "anchor",
     };
 
-    console.log(extras);
+    // console.log(extras);
 
     this.router.navigate(['/content'], extras);
   }

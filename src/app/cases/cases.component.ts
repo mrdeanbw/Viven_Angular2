@@ -23,22 +23,31 @@ export class CasesComponent implements OnInit, AfterViewInit {
   // currentCaseIndex: number = 0;
   encryptedUid: any;
   programName = "Cold and Flu";
+  auth: any;
 
-  constructor(private case_service: CaseService, private user_service: UserService, private router: Router) {
-    // this.program = this.case_service.getProgram(this.programName);
-    // this.program.subscribe(function(obj){
-    //   this.cases = obj.cases;
-    //   // console.log(obj.cases)
-    //   this.sections = obj.sections.categories;
-    // }.bind(this));
+  constructor(private case_service: CaseService, private us: UserService, private router: Router) {
+    this.program = this.case_service.getProgram(this.programName);
+    this.program.subscribe(function(obj){
+      this.cases = obj.cases;
+      // console.log(obj.cases)
+      this.sections = obj.sections.categories;
+    }.bind(this));
 
-    // if(this.user_service.isSigned()){
-    //   this.user_service.getEncryptedUid(this.user_service.getCurrentUser().uid).subscribe(value => this.encryptedUid = value);
+    this.auth = us.getAuth();
+
+    this.auth.subscribe(auth => {
+      if (auth != null) {
+        us.getEncryptedUid(auth.uid).subscribe(value => this.encryptedUid = value);
+      }
+    });
+
+    // if(this.us.isSigned()){
+    //   this.us.getEncryptedUid(this.us.getCurrentUser().uid).subscribe(value => this.encryptedUid = value);
     // }
 
-    // this.user_service.getAuthState().subscribe(function(authState){
+    // this.us.getAuthState().subscribe(function(authState){
     //   if(authState != null) {
-    //     this.user_service.getEncryptedUid(authState.uid).subscribe(value => this.encryptedUid = value);
+    //     this.us.getEncryptedUid(authState.uid).subscribe(value => this.encryptedUid = value);
     //   }
     // }.bind(this));
   }

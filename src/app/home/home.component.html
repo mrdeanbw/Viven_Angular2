@@ -1,70 +1,74 @@
 <app-header tabIndex="0"> </app-header>
 
 <div class="container-fluid">
-    <div class="row">
+    <!--tourAnchor-->
+    <div tourAnchor="welcome">
+        <div class="row">
 
-        <div tourAnchor="welcome">
+            <!--<div tourAnchor="welcome">
             <div class="col-xs-12" id="welcome">
                 <div style="margin: 1em 0em; padding: 2.0em; border: 1em solid #fd582a">
                     <span class="welcome"> Helping Employees become healthier is <span style="color: #fd582a"> the single most powerful investment </span> a company can make </span>
                 </div>
             </div>
-        </div>
+        </div>-->
 
-        <div class="col-xs-12 col-sm-6 animated fadeInLeft section">
-            <!--<div style="width:70%; margin-left:15%; padding:0px" class="row panel">-->
-            <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel">
-                <div class="col-xs-12 title">
-                    <span> PROGRESS </span>
-                </div>
+            <div class="col-xs-12 col-sm-6 animated fadeInLeft section">
+                <!--<div style="width:70%; margin-left:15%; padding:0px" class="row panel">-->
+                <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel">
+                    <div class="col-xs-12 title">
+                        <span> PROGRESS </span>
+                    </div>
 
-                <div tourAnchor="progress">
-                    <div class="col-xs-12" style="text-align: center;">
-                        <div style="width:100%; padding-top:70%">
-                            <div style="position:absolute; left:0; top:0; bottom:0; right:0">
-                                <div style="display:flex; justify-content: center; align-items: center; height: 100%; width: 100%">
-                                    <ons-progress-circular [value]="percent" style="width:60%; height:90%"></ons-progress-circular>
+                    <div tourAnchor="progress">
+                        <div class="col-xs-12" style="text-align: center;">
+                            <div style="width:100%; padding-top:70%">
+                                <div style="position:absolute; left:0; top:0; bottom:0; right:0">
+                                    <div style="display:flex; justify-content: center; align-items: center; height: 100%; width: 100%">
+                                        <ons-progress-circular [value]="percent" [secondaryValue]="100" style="width:60%; height:90%"></ons-progress-circular>
+                                    </div>
                                 </div>
-                            </div>
-                            <div style="position:absolute; left:0; top:0; bottom:0; right:0">
-                                <div style="display:flex; justify-content: center; align-items: center; height: 100%; width: 100%">
-                                    <h4 style="font-size: 28px; color:#283345">{{percent}}%</h4>
+                                <div style="position:absolute; left:0; top:0; bottom:0; right:0">
+                                    <div style="display:flex; justify-content: center; align-items: center; height: 100%; width: 100%">
+                                        <h4 style="font-size: 28px; color:#283345">{{percent}}%</h4>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
 
-        <div class="col-xs-12 col-sm-6 animated fadeInUp section">
-            <!--<div style="width:70%; margin-left:15%; padding:0px" class="row panel">-->
-            <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel">
-                <div class="col-xs-12 title">
-                    <span> NEXT CASE</span>
-                </div>
+            <div class="col-xs-12 col-sm-6 animated fadeInUp section">
+                <!--<div style="width:70%; margin-left:15%; padding:0px" class="row panel">-->
+                <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel">
+                    <div class="col-xs-12 title">
+                        <span> NEXT CASE</span>
+                    </div>
 
-                <div tourAnchor="next_case">
-                    <div class="col-xs-12" style="text-align: center;">
-                        <div style="width:100%; padding-top:70%">
-                            <div style="position:absolute; left:0; top:0; bottom:0; right:0">
-                                <md-card *ngIf="nextCase!=null" class="case-card col-xs-12" (click)="launchCase(programName, nextCase?.$key, encryptedUid)" style="width: 100%; height: 100%; padding:0">
-                                    <img src="assets/images/{{nextCase?.case.thumb}}" style="width: 100%; height: 100%">
-                                    <!--<md-card-content>
+                    <div tourAnchor="next_case">
+                        <div class="col-xs-12" style="text-align: center;">
+                            <div style="width:100%; padding-top:70%">
+                                <div style="position:absolute; left:0; top:0; bottom:0; right:0">
+                                    <md-card *ngIf="nextCase!=null" class="case-card col-xs-12" (click)="launchCase(programName, nextCase?.$key, encryptedUid)" style="width: 100%; height: 100%; padding:0">
+                                        <img src="assets/images/{{nextCase?.case.thumb}}" style="width: 100%; height: 100%">
+                                        <!--<md-card-content>
                                     <p>
                                         {{nextCase?.case.title}}
                                     </p>
                                 </md-card-content>-->
-                                </md-card>
+                                    </md-card>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
+    <!--/tourAnchor-->
 </div>
 
 <app-footer> </app-footer>

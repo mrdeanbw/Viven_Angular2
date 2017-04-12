@@ -20,16 +20,26 @@ export class ProfileComponent implements OnInit {
   allBadges: any[];
   percent: any;
 
-  constructor(private service: ProfileService, private user_service: UserService, public dialog: MdDialog) {
+  constructor(private ps: ProfileService, private us: UserService, public dialog: MdDialog) {
+    let _this = this;
 
-    // if(this.user_service.isSigned()){
-    //   this.uid = this.user_service.getCurrentUser().uid;
-    //   this.userName = this.user_service.getCurrentUser().auth.displayName;
-    //   this.photoURL = this.user_service.getCurrentUser().auth.photoURL;
+    us.getAuth().subscribe(function(auth){
+      if(auth != null) {
+        _this.uid = auth.uid;
+        _this.userName = auth.auth.displayName;
+        _this.photoURL = auth.auth.photoURL;
+        _this.getProfile();
+      }
+    });
+
+    // if(this.us.isSigned()){
+    //   this.uid = this.us.getCurrentUser().uid;
+    //   this.userName = this.us.getCurrentUser().auth.displayName;
+    //   this.photoURL = this.us.getCurrentUser().auth.photoURL;
     //   this.getProfile();
     // }
 
-    // this.user_service.getAuthState().subscribe(function(authState){
+    // this.us.getAuthState().subscribe(function(authState){
     //   if(authState != null) {
     //     this.uid = authState.uid;
     //     this.userName = authState.auth.displayName;
@@ -38,11 +48,11 @@ export class ProfileComponent implements OnInit {
     //   }
     // }.bind(this));
 
-    // this.service.getAllBadges().subscribe(function(list){
-    //     this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
-    //     this.getProfile();
-    //     // console.log(this.allBadges);
-    // }.bind(this));
+    ps.getAllBadges().subscribe(function(list){
+        _this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
+        _this.getProfile();
+        // console.log(this.allBadges);
+    });
   }
 
   ngOnInit() {
@@ -65,14 +75,14 @@ export class ProfileComponent implements OnInit {
   getProfile(){
     // console.log(this.allBadges);
     if (this.uid != null && this.allBadges != undefined ) {
-      this.percent = this.service.getProgramProgressPercent(this.uid, 'Cold and Flu');
+      this.percent = this.ps.getProgramProgressPercent(this.uid, 'Cold and Flu');
 
-      this.badges = this.service.getBadgeList(this.uid);
+      this.badges = this.ps.getBadgeList(this.uid);
       this.badges.subscribe(function(list){
         this.enableBadge(list);
       }.bind(this));
 
-      this.service.getUpdateBadgeList(this.uid).subscribe(function(obj){
+      this.ps.getUpdateBadgeList(this.uid).subscribe(function(obj){
         obj.subscribe(function(obj1){
           if (this.updateBadges == null) {
             this.updateBadges = obj1;
@@ -85,7 +95,7 @@ export class ProfileComponent implements OnInit {
               this.dialogRef.componentInstance.badge = badge;
 
               this.dialogRef.afterClosed().subscribe(result => {
-                this.service.awardBadgeToUser(this.uid, { name: badge.name });
+                this.ps.awardBadgeToUser(this.uid, { name: badge.name });
               });
             }.bind(this));
           }
