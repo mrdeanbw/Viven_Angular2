@@ -14,11 +14,16 @@ export class UserService {
   private getUserURL = '/api/getVar';
   private headers = new Headers({'Content-Type': 'application/json'});
   private signed: boolean = false;
+  private firstSigned: boolean = false;
   // private currentAuth: any = null;
 
   // getAuthState(){
   //   return this.authState;
   // }
+
+  isFirstSigned(){
+    return this.firstSigned;
+  }
 
   getAuth(){
     return this.af.auth;
@@ -42,9 +47,12 @@ export class UserService {
           // this.authState.next(auth);
           // this.currentAuth = auth;
         }.bind(this));
+
+        this.firstSigned = true;
       } else {
         // this.authState.next(auth);
         // this.currentAuth = auth;
+        this.firstSigned = false;
       }
     });
 

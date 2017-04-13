@@ -66,6 +66,11 @@ import { BadgeAwardDirective } from './badge-award.directive';
     // ScrollViewModule,
     RouterModule.forRoot([
     {
+      path: '',
+      // component: LandingComponent,
+      component: LoginComponent,
+    },
+    {
       path: 'login',
       component: LoginComponent,
     },{
@@ -79,10 +84,6 @@ import { BadgeAwardDirective } from './badge-award.directive';
     {
       path: 'profile',
       component: ProfileComponent,
-    },
-    {
-      path: '',
-      component: LandingComponent,
     },
     {
       path: 'home',
