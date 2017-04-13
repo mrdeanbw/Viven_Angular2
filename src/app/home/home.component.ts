@@ -11,7 +11,7 @@ import { Router, NavigationExtras } from '@angular/router';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  providers: [ ProfileService ]
+  // providers: [ ProfileService ]
 })
 export class HomeComponent implements OnInit {
   percent: number = 0;

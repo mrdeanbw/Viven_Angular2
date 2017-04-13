@@ -18,6 +18,7 @@ import 'hammerjs';
 import { firebaseConfig } from './../environments/firebase.config';
 
 import { UserService } from './user.service';
+import { ProfileService } from './profile.service';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -99,7 +100,7 @@ import { BadgeComponent } from './badge/badge.component';
     TourNgBootstrapModule,
     HotkeyModule.forRoot(),
   ],
-  providers: [UserService, TourService],
+  providers: [UserService, ProfileService, TourService],
   bootstrap: [AppComponent],
   entryComponents: [BadgeComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

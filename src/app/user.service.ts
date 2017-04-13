@@ -171,7 +171,7 @@ export class UserService {
 
   getEncryptedUid(uid) {
   //: Promise<any> {
-    console.log('http requesting...');
+    // console.log('http requesting...');
 
     let user = {id: uid};
 

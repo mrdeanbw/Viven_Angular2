@@ -65,7 +65,7 @@ export class CasesComponent implements OnInit, AfterViewInit {
       // fragment: "anchor",
     };
 
-    console.log(extras);
+    // console.log(extras);
 
     this.router.navigate(['/content'], extras);
   }

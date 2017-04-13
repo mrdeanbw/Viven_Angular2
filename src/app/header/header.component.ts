@@ -1,11 +1,13 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { UserService} from '../user.service';
 // import { TourService }  from 'ng2-tour';
+import { BadgeAwardService } from '../badge-award.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
+  providers: [ BadgeAwardService ],
 })
 export class HeaderComponent implements OnInit {
   @Input() tabIndex: number;
@@ -15,7 +17,7 @@ export class HeaderComponent implements OnInit {
   auth: any;
 
   // constructor(private service: UserService, private tourService: TourService) {
-  constructor(private us: UserService) {
+  constructor(private us: UserService, private bs: BadgeAwardService) {
     // console.log('constructor');
   
     // this.isSigned = this.service.isSigned();
