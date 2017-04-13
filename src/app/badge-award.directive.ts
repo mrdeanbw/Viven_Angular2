@@ -1,18 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Directive } from '@angular/core';
 import { UserService } from './user.service';
 import { ProfileService } from './profile.service';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { BadgeComponent } from './badge/badge.component';
 
-@Injectable()
-export class BadgeAwardService {
+@Directive({
+  selector: '[appBadgeAward]',
+})
+export class BadgeAwardDirective {
   uid: any = null;
   badges: any;
   updateBadges: any = null;
   allBadges: any[];
   dialogRef: MdDialogRef<BadgeComponent>;
 
-  constructor(private ps: ProfileService, private us: UserService, public dialog: MdDialog) {
+  constructor(private ps: ProfileService, private us: UserService, public dialog: MdDialog) { 
     us.getAuth().subscribe(function(auth){
       if(auth != null) {
         this.uid = auth.uid;
