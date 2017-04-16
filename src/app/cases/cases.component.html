@@ -58,7 +58,7 @@
                     <ng-container *ngIf="i==0 && j==7" tourAnchor="first_case"></ng-container>
                     <div style="width:100%; padding-top:90%">
                         <div style="position:absolute; width:100%; height:100%; left:0; top:0">
-                            <md-card (click)="launchCase(programName, case.id, encryptedUid)" style="margin-left:3%; margin-right:3%; height:100%">
+                            <md-card (click)="launchCase(programName, case.id, encryptedUid)" style="margin-left:3%; margin-right:3%; height:100%; cursor:pointer">
                                 <img md-card-image src="assets/images/{{case.obj.case.thumb}}">
                                 <md-card-content>
                                     <p>

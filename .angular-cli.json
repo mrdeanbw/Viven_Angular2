@@ -31,7 +31,8 @@
             "../node_modules/jquery/dist/jquery.min.js",
             "../node_modules/mdbootstrap/js/tether.min.js",
             "../node_modules/mdbootstrap/js/bootstrap.min.js",
-            "../node_modules/onsenui/js/onsenui.js"
+            "../node_modules/onsenui/js/onsenui.js",
+            "../semantic/dist/semantic.min.js"
         ],
         "environmentSource": "environments/environment.ts",
         "environments": {

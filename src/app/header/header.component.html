@@ -75,7 +75,7 @@
                 <div style="display:flex; align-items: center; justify-content: center">
                     <!--<div style="color:rgb(212,214,215); margin-right: 16px">{{(userName)}}</div>-->
                     <div style="color:rgb(212,214,215); margin-right: 16px">{{ (auth | async)?.auth.displayName }}</div>
-                    <div md-icon-button [mdMenuTriggerFor]="account" [ngStyle]="{'width': '70px', 'height': '70px', 'background': 'url(' + (auth | async)?.auth.photoURL + ') center/cover no-repeat', 'border':'4px solid darkgray', 'border-radius': '5px'}">
+                    <div md-icon-button [mdMenuTriggerFor]="account" [ngStyle]="{'width': '70px', 'height': '70px', 'background': 'url(' + (auth | async)?.auth.photoURL + ') center/cover no-repeat', 'border':'4px solid darkgray', 'border-radius': '5px', 'cursor':'pointer'}">
                     </div>
 
                     <div tourAnchor="login">

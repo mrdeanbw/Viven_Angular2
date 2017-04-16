@@ -3,6 +3,9 @@ import { ProfileService } from '../profile.service';
 import { UserService } from '../user.service';
 // import { MdDialog, MdDialogRef } from '@angular/material';
 // import { BadgeComponent } from '../badge/badge.component';
+// import $ from 'jquery'; only for this component
+
+declare var $: any;
 
 @Component({
   selector: 'app-profile',
@@ -57,6 +60,7 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit() {
+    $('.ui.card').popup();
   }
 
   // openDialog() {
@@ -105,6 +109,9 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  launchModal() {
+    // $('.ui.basic.modal').modal('show');
+  }
 }
 
 // function contains(a, obj) {

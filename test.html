@@ -1,0 +1,70 @@
+<html>
+
+<header>
+    <link type="text/css" rel="stylesheet" href="semantic/dist/semantic.min.css">
+
+    <script src="node_modules/jquery/dist/jquery.min.js">
+    </script>
+    <script src="semantic/dist/semantic.min.js"></script>
+</header>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <div class="ui card" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
+        <div class="image">
+            <img src="/images/movies/totoro-horizontal.jpg">
+        </div>
+        <div class="content">
+            <div class="header">My Neighbor Totoro</div>
+            <div class="description">
+                Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by magical spirits.
+            </div>
+        </div>
+        <div class="ui two bottom attached buttons">
+            <div class="ui button">
+                <i class="add icon"></i> Queue
+            </div>
+            <div class="ui primary button">
+                <i class="play icon"></i> Watch
+            </div>
+        </div>
+    </div>
+
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="top left">
+        Top Left
+    </div>
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="top center">
+        Top Center
+    </div>
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="top right">
+        Top Right
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="bottom left">
+        Bottom Left
+    </div>
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="bottom center">
+        Bottom Center
+    </div>
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="bottom right">
+        Bottom Right
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="right center">
+        Right Center
+    </div>
+    <div class="ui button" data-tooltip="Add users to your feed" data-position="left center">
+        Left Center
+    </div>
+</body>
+
+<script>
+    $('.ui.card')
+        .popup({
+            inline: true
+        });
+</script>
+
+</html>
