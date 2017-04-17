@@ -48,7 +48,7 @@ export class BadgeAwardDirective {
     if (this.uid != null && this.allBadges != undefined ) {
       // this.percent = this.ps.getProgramProgressPercent(this.uid, 'Cold and Flu');
 
-      this.badges = this.ps.getBadgeList(this.uid);
+      this.badges = this.ps.getAwardedBadges(this.uid);
       this.badges.subscribe(function(list){
         this.enableBadge(list);
       }.bind(this));

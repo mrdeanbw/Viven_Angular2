@@ -74,13 +74,13 @@ export class ProfileService {
     return this.af.database.list('badge');
   }
 
-  getBadgeList(uid) {
+  getAwardedBadges(uid) {
     return this.af.database.list(`users/${uid}/progress/badges`);
   }
 
   getUpdateBadgeList(uid) {
 
-    return this.getBadgeList(uid).map(function(badgeList){
+    return this.getAwardedBadges(uid).map(function(badgeList){
       return this.af.database.object(`users/${uid}/progress/actions`).map(function(actions){
 
         let updateList = [];

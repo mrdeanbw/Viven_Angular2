@@ -64,7 +64,7 @@
                 <div class="header">Badges</div>
                 <br><br>
 
-                <div class="col-xs-3" *ngFor="let badge of allBadges" style="display: inline-block; text-align: center">
+                <div class="col-xs-3" *ngFor="let badge of allBadges" style="display: inline-block; text-align: center" (click)="launchModal()">
                     <app-badge-item [badge]="badge"> </app-badge-item>
                 </div>
 
