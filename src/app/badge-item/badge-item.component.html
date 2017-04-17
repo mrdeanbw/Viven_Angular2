@@ -1,0 +1,5 @@
+<!--<div mdTooltip="{{badge.description}}" mdTooltipPosition="below" [ngStyle]="{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}" style="width: 100%; padding-top:100%" (click)="launchModal()">
+    </div>-->
+<div [ngStyle]="{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}" style="width: 100%; padding-top:100%" (click)="launchModal()" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
+</div>
+<h6 style="height:40px"> {{badge.name}} </h6>

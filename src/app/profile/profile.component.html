@@ -63,12 +63,11 @@
             <div class="col-xs-12 contact-form info-panel">
                 <div class="header">Badges</div>
                 <br><br>
+
                 <div class="col-xs-3" *ngFor="let badge of allBadges" style="display: inline-block; text-align: center">
-                    <div mdTooltip="{{badge.description}}" mdTooltipPosition="below" [ngStyle]="{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}" style="width: 100%; padding-top:100%" (click)="launchModal()">
-                    </div>
-                    <h6 style="height:40px"> {{badge.name}} </h6>
+                    <app-badge-item [badge]="badge"> </app-badge-item>
                 </div>
-                <!--<img *ngFor="let badge of allBadges" src="assets/images/badges/{{badge.enabled ? badge.image_e:badge.image_d}}" style="width: 20%; height: 30%; padding:5%">-->
+
                 <br><br>
             </div>
         </div>

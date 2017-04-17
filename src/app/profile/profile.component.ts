@@ -60,7 +60,7 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit() {
-    $('.ui.card').popup();
+    // $('.ui.card').popup();
   }
 
   // openDialog() {

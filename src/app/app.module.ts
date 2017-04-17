@@ -35,6 +35,7 @@ import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { BadgeComponent } from './badge/badge.component';
 import { BadgeAwardDirective } from './badge-award.directive';
+import { BadgeItemComponent } from './badge-item/badge-item.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { BadgeAwardDirective } from './badge-award.directive';
     SignupComponent,
     BadgeComponent,
     BadgeAwardDirective,
+    BadgeItemComponent,
   ],
   imports: [
     BrowserModule,
