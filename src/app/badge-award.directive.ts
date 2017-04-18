@@ -22,8 +22,9 @@ export class BadgeAwardDirective {
       }
     }.bind(this));
 
-    ps.getAllBadges().subscribe(function(list){
-        this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
+    ps.getAllBadges(this.uid).subscribe(function(badgeList){
+        // this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
+        this.allBadges = badgeList;
         this.getProfile();
         // console.log(this.allBadges);
     }.bind(this));
@@ -33,28 +34,27 @@ export class BadgeAwardDirective {
     return this.dialog.open(BadgeComponent);
   }
 
-  enableBadge(list) {
-    list.forEach(function(badge) {
-      this.allBadges.forEach(function(obj){
-        if (obj.name == badge.name) {
-          obj.enabled = true;
-        }
-      });
-    }.bind(this));
-  }
+  // enableBadge(list) {
+  //   list.forEach(function(badge) {
+  //     this.allBadges.forEach(function(obj){
+  //       if (obj.name == badge.name) {
+  //         obj.enabled = true;
+  //       }
+  //     });
+  //   }.bind(this));
+  // }
 
   getProfile(){
     // console.log(this.allBadges);
     if (this.uid != null && this.allBadges != undefined ) {
       // this.percent = this.ps.getProgramProgressPercent(this.uid, 'Cold and Flu');
 
-      this.badges = this.ps.getAwardedBadges(this.uid);
-      this.badges.subscribe(function(list){
-        this.enableBadge(list);
-      }.bind(this));
+      // this.badges = this.ps.getAwardedBadges(this.uid);
+      // this.badges.subscribe(function(list){
+      //   this.enableBadge(list);
+      // }.bind(this));
 
-      this.ps.getUpdateBadgeList(this.uid).subscribe(function(obj){
-        obj.subscribe(function(obj1){
+      this.ps.getUpdateBadgeList(this.uid).subscribe(function(obj1){
           if (this.updateBadges == null) {
             this.updateBadges = obj1;
             this.updateBadges.forEach(function(badge){
@@ -70,7 +70,6 @@ export class BadgeAwardDirective {
               });
             }.bind(this));
           }
-        }.bind(this));
       }.bind(this));
     }
   }

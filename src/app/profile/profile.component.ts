@@ -52,10 +52,11 @@ export class ProfileComponent implements OnInit {
     //   }
     // }.bind(this));
 
-    ps.getAllBadges().subscribe(function(list){
-        _this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
+    ps.getAllBadges(this.uid).subscribe(function(badgeList){
+        // _this.allBadges = list.map((value, index) => {value.enabled = false; return value;});
+        _this.allBadges = badgeList;
         _this.getProfile();
-        // console.log(this.allBadges);
+        // console.log(_this.allBadges);
     });
   }
 
@@ -67,25 +68,25 @@ export class ProfileComponent implements OnInit {
   //   return this.dialog.open(BadgeComponent);
   // }
 
-  enableBadge(list) {
-    list.forEach(function(badge) {
-      this.allBadges.forEach(function(obj){
-        if (obj.name == badge.name) {
-          obj.enabled = true;
-        }
-      });
-    }.bind(this));
-  }
+  // enableBadge(list) {
+  //   list.forEach(function(badge) {
+  //     this.allBadges.forEach(function(obj){
+  //       if (obj.name == badge.name) {
+  //         obj.enabled = true;
+  //       }
+  //     });
+  //   }.bind(this));
+  // }
 
   getProfile() {
     // console.log(this.allBadges);
     if (this.uid != null && this.allBadges != undefined ) {
       this.percent = this.ps.getProgramProgressPercent(this.uid, 'Cold and Flu');
 
-      this.badges = this.ps.getAwardedBadges(this.uid);
-      this.badges.subscribe(function(list){
-        this.enableBadge(list);
-      }.bind(this));
+      // this.badges = this.ps.getAwardedBadges(this.uid);
+      // this.badges.subscribe(function(list){
+      //   this.enableBadge(list);
+      // }.bind(this));
 
       // this.ps.getUpdateBadgeList(this.uid).subscribe(function(obj){
       //   obj.subscribe(function(obj1){
