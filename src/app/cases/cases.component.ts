@@ -23,7 +23,6 @@ export class CasesComponent implements OnInit, AfterViewInit {
   // currentCaseIndex: number = 0;
   encryptedUid: any;
   programName = "Cold and Flu";
-  auth: any;
 
   constructor(private case_service: CaseService, private us: UserService, private router: Router) {
     this.program = this.case_service.getProgram(this.programName);
@@ -33,23 +32,11 @@ export class CasesComponent implements OnInit, AfterViewInit {
       this.sections = obj.sections.categories;
     }.bind(this));
 
-    this.auth = us.getAuth();
-
-    this.auth.subscribe(auth => {
-      if (auth != null) {
-        us.getEncryptedUid(auth.uid).subscribe(value => this.encryptedUid = value);
+    this.us.getUser().subscribe( user => {
+      if (user != null) {
+        us.getEncryptedUid(user.uid).subscribe(value => this.encryptedUid = value);
       }
     });
-
-    // if(this.us.isSigned()){
-    //   this.us.getEncryptedUid(this.us.getCurrentUser().uid).subscribe(value => this.encryptedUid = value);
-    // }
-
-    // this.us.getAuthState().subscribe(function(authState){
-    //   if(authState != null) {
-    //     this.us.getEncryptedUid(authState.uid).subscribe(value => this.encryptedUid = value);
-    //   }
-    // }.bind(this));
   }
 
   ngOnInit() {

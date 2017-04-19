@@ -2,69 +2,6 @@ import { Injectable } from '@angular/core';
 import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
 import { Observable } from 'rxjs';
 
-// const badges = [
-//   {
-//     name: "The Beginner",
-//     image: "01.png",
-//   },
-//   {
-//     name: "The Cleaner",
-//     image: "02.png",
-//   },
-//   {
-//     name: "Sanitizer Adept",
-//     image: "03.png",
-//   },
-//   {
-//     name: "The Health Seeker",
-//     image: "04.png",
-//   },
-//   {
-//     name: "Flu Fighter",
-//     image: "05.png",
-//   },
-//   {
-//     name: "Master Cleaner",
-//     image: "06.png",
-//   },
-//   {
-//     name: "Hand Hygiene Pro",
-//     image: "07.png",
-//   },
-//   {
-//     name: "Sanitizing Expert",
-//     image: "08.png",
-//   },
-//   {
-//     name: "The Alchemist",
-//     image: "09.png",
-//   },
-//   {
-//     name: "Flu Fighter Legend",
-//     image: "10.png",
-//   },
-//   {
-//     name: "Healthy and Whole",
-//     image: "11.png",
-//   },
-//   {
-//     name: "Hand Hygiene Expert",
-//     image: "12.png",
-//   },
-//   {
-//     name: "Sanitizer Legend",
-//     image: "13.png",
-//   },
-//   {
-//     name: "Flu Fighter Hero",
-//     image: "14.png",
-//   },
-//   {
-//     name: "Germ Free Specialist",
-//     image: "15.png",
-//   },
-// ];
-
 @Injectable()
 export class ProfileService {
   constructor(private af: AngularFire) {
@@ -128,46 +65,6 @@ export class ProfileService {
           return updateList;
         }
       );
-      // return this.af.database.object(`users/${uid}/progress/actions`).map(function(actions){
-
-      //   let updateList = [];
-
-      //   if (!contains(badgeList, badges[0])) updateList.push(badges[0]);
-
-      //   if (actions['Sanitizing Wipes'] != undefined && actions['Sanitizing Wipes'] > 0)
-      //     if (!contains(badgeList, badges[1])) updateList.push(badges[1]);
-
-      //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] > 0)
-      //     if (!contains(badgeList, badges[2])) updateList.push(badges[2]);
-
-      //   if (actions['Phone'] != undefined)
-      //     if (!contains(badgeList, badges[3])) updateList.push(badges[3]);
-
-      //   if (actions['Sanitizing Wipes'] != undefined && actions['Sanitizing Wipes'] >= 10)
-      //     if (!contains(badgeList, badges[5])) updateList.push(badges[5]);
-
-      //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 5)
-      //     if (!contains(badgeList, badges[6])) updateList.push(badges[6]);
-
-      //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 10)
-      //     if (!contains(badgeList, badges[7])) updateList.push(badges[7]);
-
-      //   if (actions['Medicine'] != undefined && actions['Medicine'] >= 10)
-      //     if (!contains(badgeList, badges[8])) updateList.push(badges[8]);
-
-      //   if (actions['Wash Hands'] != undefined && actions['Wash Hands'] >= 20)
-      //     if (!contains(badgeList, badges[10])) updateList.push(badges[10]);
-
-      //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 20)
-      //     if (actions['Wash Hands'] != undefined && actions['Wash Hands'] >= 20)
-      //       if (!contains(badgeList, badges[11])) updateList.push(badges[11]);
-
-      //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 50)
-      //     if (!contains(badgeList, badges[12])) updateList.push(badges[12]);
-        
-      //   return updateList;
-        
-      // });
     }.bind(this));
   }
 

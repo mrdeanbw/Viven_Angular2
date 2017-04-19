@@ -21,17 +21,18 @@ export class ProfileComponent implements OnInit {
   badges: any;
   updateBadges: any = null;
   allBadges: any[];
+  user: any;
   // dialogRef: MdDialogRef<BadgeComponent>;
 
   constructor(private ps: ProfileService, private us: UserService/*, public dialog: MdDialog*/) {
     
     let _this = this;
 
-    us.getAuth().subscribe(function(auth){
-      if(auth != null) {
-        _this.uid = auth.uid;
-        _this.userName = auth.auth.displayName;
-        _this.photoURL = auth.auth.photoURL;
+    us.getUser().subscribe(function(user){
+      if(user != null) {
+        _this.uid = user.uid;
+        _this.userName = user.name;
+        _this.photoURL = user.picture;
         _this.getProfile();
       }
     });

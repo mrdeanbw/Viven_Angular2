@@ -36,8 +36,8 @@ var BadgeComponent = (function () {
 BadgeComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-badge',
-        template: __webpack_require__(671),
-        styles: [__webpack_require__(603)],
+        template: __webpack_require__(672),
+        styles: [__webpack_require__(604)],
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_material__["c" /* MdDialogRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_material__["c" /* MdDialogRef */]) === "function" && _a || Object])
 ], BadgeComponent);
@@ -54,7 +54,9 @@ var _a;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(97);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_angularfire2__ = __webpack_require__(50);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_router__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs__ = __webpack_require__(425);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_router__ = __webpack_require__(38);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UserService; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68,7 +70,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-// import 'rxjs/add/operator/toPromise';
+
 
 var UserService = (function () {
     function UserService(af, http, router) {
@@ -77,69 +79,98 @@ var UserService = (function () {
         this.http = http;
         this.router = router;
         this.isSignupProcess = false;
-        // private authState: Subject<any> = new Subject();
         this.getUserURL = '/api/getVar';
         this.headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]({ 'Content-Type': 'application/json' });
         this.signed = false;
         this.firstSigned = false;
-        this.af.auth.subscribe(function (auth) {
-            console.log(auth);
-            if (_this.isSignupProcess) {
-                _this.model.firstname == undefined && (_this.model.firstname = '');
-                _this.model.lastname == undefined && (_this.model.lastname = '');
-                auth.auth.updateProfile({
-                    displayName: (_this.model.firstname.trim() + ' ' + _this.model.lastname.trim()).trim(),
-                    photoURL: "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"
-                }).then(function () {
-                    this.isSignupProcess = false;
-                    // this.authState.next(auth);
-                    // this.currentAuth = auth;
-                }.bind(_this));
-                _this.firstSigned = true;
-            }
-            else {
-                // this.authState.next(auth);
-                // this.currentAuth = auth;
-                _this.firstSigned = false;
-            }
-        });
-        this.af.auth.subscribe(function (auth) {
-            // console.log(auth);
+        this.user = null;
+        this.user = this.af.auth.switchMap(function (auth) {
             if (auth != null) {
-                _this.getUser(auth.auth.email).subscribe(function (user) {
-                    if (user == null) {
-                        this.createUser({
-                            id: auth.uid,
-                            email: auth.auth.email,
-                            name: auth.auth.displayName,
-                            picture: auth.auth.photoURL,
-                        }).then(function () {
-                            this.router.navigateByUrl('/home');
-                        }.bind(this));
-                    }
-                    else {
-                        if (router.url == "/login" || router.url == "/" || router.url == "/signup") {
-                            this.router.navigateByUrl('/home');
-                        }
-                    }
-                }.bind(_this));
                 _this.signed = true;
+                if (_this.isSignupProcess) {
+                    _this.model.firstname == undefined && (_this.model.firstname = '');
+                    _this.model.lastname == undefined && (_this.model.lastname = '');
+                    return __WEBPACK_IMPORTED_MODULE_3_rxjs__["Observable"].fromPromise(auth.auth.updateProfile({
+                        displayName: (_this.model.firstname.trim() + ' ' + _this.model.lastname.trim()).trim(),
+                        photoURL: "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"
+                    })).switchMap(function () {
+                        _this.isSignupProcess = false;
+                        _this.firstSigned = true;
+                        return _this.getUserInDB(auth);
+                    });
+                }
+                else {
+                    _this.firstSigned = false;
+                    return _this.getUserInDB(auth);
+                }
             }
             else {
-                _this.router.navigateByUrl('/');
                 _this.signed = false;
+                return __WEBPACK_IMPORTED_MODULE_3_rxjs__["Observable"].create(function (observer) { observer.next(null); observer.complete(); });
             }
         });
+        this.user.subscribe(function (user) { return console.log(user); });
     }
-    // private currentAuth: any = null;
-    // getAuthState(){
-    //   return this.authState;
-    // }
     UserService.prototype.isFirstSigned = function () {
         return this.firstSigned;
     };
-    UserService.prototype.getAuth = function () {
-        return this.af.auth;
+    UserService.prototype.getUser = function () {
+        return this.user;
+    };
+    UserService.prototype.getUserInDB = function (auth) {
+        var _this = this;
+        return this.findUserInDB(auth.auth.email).switchMap(function (user) {
+            if (user == null) {
+                _this.router.navigateByUrl('/home');
+                return _this.createUserInDB({
+                    id: auth.uid,
+                    email: auth.auth.email,
+                    name: auth.auth.displayName,
+                    picture: auth.auth.photoURL,
+                });
+            }
+            else {
+                if (_this.router.url == "/login" || _this.router.url == "/" || _this.router.url == "/signup") {
+                    _this.router.navigateByUrl('/home');
+                }
+                return __WEBPACK_IMPORTED_MODULE_3_rxjs__["Observable"].create(function (observer) { observer.next(user); observer.complete(); });
+            }
+        });
+    };
+    UserService.prototype.findUserInDB = function (email) {
+        var users;
+        users = this.af.database.list('/users');
+        return users.map(function (userList) {
+            var foundUser = null;
+            userList.forEach(function (value, index) {
+                if (value.email == email) {
+                    foundUser = value;
+                }
+            });
+            if (foundUser == null)
+                return null;
+            return {
+                id: foundUser.id,
+                email: foundUser.email,
+                name: foundUser.name,
+                picture: foundUser.picture,
+            };
+        });
+    };
+    UserService.prototype.createUserInDB = function (user) {
+        var initialProgress = {};
+        var _user = user;
+        initialProgress.next_action = {
+            case: "-JkEYXe6hIrueGO5F25Y",
+            program: "Cold and Flu"
+        };
+        initialProgress.programs = {};
+        initialProgress.programs["Cold and Flu"] = {};
+        initialProgress.programs["Cold and Flu"].casesCompleted = ["null"];
+        initialProgress.programs["Cold and Flu"].isComplete = false;
+        user.progress = initialProgress;
+        user.company = "default";
+        return __WEBPACK_IMPORTED_MODULE_3_rxjs__["Observable"].fromPromise((this.af.database.object('/users/' + user.id).set(user))).map(function () { return _user; });
     };
     UserService.prototype.emailLogin = function (model) {
         this.isSignupProcess = false;
@@ -174,62 +205,26 @@ var UserService = (function () {
             password: model.password,
         });
     };
-    UserService.prototype.getUser = function (email) {
-        var users;
-        users = this.af.database.list('/users');
-        return users.map(function (userList) {
-            var foundUser = null;
-            userList.forEach(function (value, index) {
-                if (value.email == email) {
-                    foundUser = value;
-                }
-            });
-            return foundUser;
-        });
-    };
-    // handleError(){
-    //   console.log('http error!');
-    // }
-    UserService.prototype.createUser = function (user) {
-        var initialProgress = {};
-        initialProgress.next_action = {
-            case: "-JkEYXe6hIrueGO5F25Y",
-            program: "Cold and Flu"
-        };
-        initialProgress.programs = {};
-        initialProgress.programs["Cold and Flu"] = {};
-        initialProgress.programs["Cold and Flu"].casesCompleted = ["null"];
-        initialProgress.programs["Cold and Flu"].isComplete = false;
-        user.progress = initialProgress;
-        user.company = "default";
-        return this.af.database.object('/users/' + user.id).set(user);
-    };
     UserService.prototype.signout = function () {
         this.router.navigateByUrl('/');
         return this.af.auth.logout();
     };
     UserService.prototype.isSigned = function () {
-        // return this.currentAuth != null;
         return this.signed;
     };
     UserService.prototype.getEncryptedUid = function (uid) {
-        //: Promise<any> {
-        // console.log('http requesting...');
         var user = { id: uid };
         return this.http
             .post(this.getUserURL, JSON.stringify(user), { headers: this.headers })
             .map(function (res) {
             return res.json().id;
         });
-        // .toPromise()
-        // .then(res => res.json())
-        // .catch(this.handleError);
     };
     return UserService;
 }());
 UserService = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2_angularfire2__["b" /* AngularFire */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_angularfire2__["b" /* AngularFire */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"]) === "function" && _c || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2_angularfire2__["b" /* AngularFire */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_angularfire2__["b" /* AngularFire */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__angular_router__["Router"]) === "function" && _c || Object])
 ], UserService);
 
 var _a, _b, _c;
@@ -237,7 +232,7 @@ var _a, _b, _c;
 
 /***/ }),
 
-/***/ 480:
+/***/ 481:
 /***/ (function(module, exports) {
 
 function webpackEmptyContext(req) {
@@ -246,20 +241,20 @@ function webpackEmptyContext(req) {
 webpackEmptyContext.keys = function() { return []; };
 webpackEmptyContext.resolve = webpackEmptyContext;
 module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 480;
+webpackEmptyContext.id = 481;
 
 
 /***/ }),
 
-/***/ 481:
+/***/ 482:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__(498);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_app_module__ = __webpack_require__(504);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(521);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__(499);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_app_module__ = __webpack_require__(505);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(522);
 
 
 
@@ -272,7 +267,7 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dyna
 
 /***/ }),
 
-/***/ 503:
+/***/ 504:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -297,8 +292,8 @@ var AppComponent = (function () {
 AppComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-root',
-        template: __webpack_require__(669),
-        styles: [__webpack_require__(601)],
+        template: __webpack_require__(670),
+        styles: [__webpack_require__(602)],
     }),
     __metadata("design:paramtypes", [])
 ], AppComponent);
@@ -307,48 +302,48 @@ AppComponent = __decorate([
 
 /***/ }),
 
-/***/ 504:
+/***/ 505:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_animations__ = __webpack_require__(499);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_animations__ = __webpack_require__(500);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_http__ = __webpack_require__(97);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__angular_material__ = __webpack_require__(98);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_angularfire2__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__angular_router__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_ng2_bootstrap__ = __webpack_require__(642);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_angular2_onsenui__ = __webpack_require__(524);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_ng2_bootstrap__ = __webpack_require__(643);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_angular2_onsenui__ = __webpack_require__(525);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_angular2_onsenui___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_angular2_onsenui__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_ng2_tour__ = __webpack_require__(423);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_ng2_tour___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_ng2_tour__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_angular2_hotkeys__ = __webpack_require__(117);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_angular2_hotkeys___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11_angular2_hotkeys__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_scroll_into_view_if_needed__ = __webpack_require__(479);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_scroll_into_view_if_needed__ = __webpack_require__(480);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_scroll_into_view_if_needed___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12_scroll_into_view_if_needed__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_hammerjs__ = __webpack_require__(633);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_hammerjs__ = __webpack_require__(634);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13_hammerjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__environments_firebase_config__ = __webpack_require__(522);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__environments_firebase_config__ = __webpack_require__(523);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__user_service__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__profile_service__ = __webpack_require__(68);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__app_component__ = __webpack_require__(503);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__header_header_component__ = __webpack_require__(512);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__content_content_component__ = __webpack_require__(509);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__landing_landing_component__ = __webpack_require__(514);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__home_home_component__ = __webpack_require__(513);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__footer_footer_component__ = __webpack_require__(511);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__programs_programs_component__ = __webpack_require__(517);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__support_support_component__ = __webpack_require__(520);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__faq_item_faq_item_component__ = __webpack_require__(510);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__cases_cases_component__ = __webpack_require__(508);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__profile_profile_component__ = __webpack_require__(516);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__login_login_component__ = __webpack_require__(515);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__signup_signup_component__ = __webpack_require__(518);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__app_component__ = __webpack_require__(504);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__header_header_component__ = __webpack_require__(513);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__content_content_component__ = __webpack_require__(510);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__landing_landing_component__ = __webpack_require__(515);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__home_home_component__ = __webpack_require__(514);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__footer_footer_component__ = __webpack_require__(512);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__programs_programs_component__ = __webpack_require__(518);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__support_support_component__ = __webpack_require__(521);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__faq_item_faq_item_component__ = __webpack_require__(511);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__cases_cases_component__ = __webpack_require__(509);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__profile_profile_component__ = __webpack_require__(517);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__login_login_component__ = __webpack_require__(516);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__signup_signup_component__ = __webpack_require__(519);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__badge_badge_component__ = __webpack_require__(214);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__badge_award_directive__ = __webpack_require__(505);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__badge_item_badge_item_component__ = __webpack_require__(506);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__badge_award_directive__ = __webpack_require__(506);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__badge_item_badge_item_component__ = __webpack_require__(507);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -476,7 +471,7 @@ AppModule = __decorate([
 
 /***/ }),
 
-/***/ 505:
+/***/ 506:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -507,9 +502,9 @@ var BadgeAwardDirective = (function () {
         this.dialog = dialog;
         this.uid = null;
         this.updateBadges = null;
-        us.getAuth().subscribe(function (auth) {
-            if (auth != null) {
-                this.uid = auth.uid;
+        us.getUser().subscribe(function (user) {
+            if (user != null) {
+                this.uid = user.uid;
                 this.getProfile();
             }
         }.bind(this));
@@ -572,7 +567,7 @@ var _a, _b, _c;
 
 /***/ }),
 
-/***/ 506:
+/***/ 507:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -605,8 +600,8 @@ __decorate([
 BadgeItemComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-badge-item',
-        template: __webpack_require__(670),
-        styles: [__webpack_require__(602)]
+        template: __webpack_require__(671),
+        styles: [__webpack_require__(603)]
     }),
     __metadata("design:paramtypes", [])
 ], BadgeItemComponent);
@@ -615,7 +610,7 @@ BadgeItemComponent = __decorate([
 
 /***/ }),
 
-/***/ 507:
+/***/ 508:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -661,12 +656,12 @@ var _a;
 
 /***/ }),
 
-/***/ 508:
+/***/ 509:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__case_service__ = __webpack_require__(507);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__case_service__ = __webpack_require__(508);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__user_service__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_router__ = __webpack_require__(38);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CasesComponent; });
@@ -698,20 +693,11 @@ var CasesComponent = (function () {
             // console.log(obj.cases)
             this.sections = obj.sections.categories;
         }.bind(this));
-        this.auth = us.getAuth();
-        this.auth.subscribe(function (auth) {
-            if (auth != null) {
-                us.getEncryptedUid(auth.uid).subscribe(function (value) { return _this.encryptedUid = value; });
+        this.us.getUser().subscribe(function (user) {
+            if (user != null) {
+                us.getEncryptedUid(user.uid).subscribe(function (value) { return _this.encryptedUid = value; });
             }
         });
-        // if(this.us.isSigned()){
-        //   this.us.getEncryptedUid(this.us.getCurrentUser().uid).subscribe(value => this.encryptedUid = value);
-        // }
-        // this.us.getAuthState().subscribe(function(authState){
-        //   if(authState != null) {
-        //     this.us.getEncryptedUid(authState.uid).subscribe(value => this.encryptedUid = value);
-        //   }
-        // }.bind(this));
     }
     CasesComponent.prototype.ngOnInit = function () {
     };
@@ -730,8 +716,8 @@ var CasesComponent = (function () {
 CasesComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-cases',
-        template: __webpack_require__(672),
-        styles: [__webpack_require__(604)],
+        template: __webpack_require__(673),
+        styles: [__webpack_require__(605)],
         providers: [__WEBPACK_IMPORTED_MODULE_1__case_service__["a" /* CaseService */]],
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__case_service__["a" /* CaseService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__case_service__["a" /* CaseService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__user_service__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__user_service__["a" /* UserService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"]) === "function" && _c || Object])
@@ -742,7 +728,7 @@ var _a, _b, _c;
 
 /***/ }),
 
-/***/ 509:
+/***/ 510:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -789,8 +775,8 @@ var ContentComponent = (function () {
 ContentComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-content',
-        template: __webpack_require__(673),
-        styles: [__webpack_require__(605)]
+        template: __webpack_require__(674),
+        styles: [__webpack_require__(606)]
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_platform_browser__["DomSanitizer"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_platform_browser__["DomSanitizer"]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__angular_common__["Location"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__angular_common__["Location"]) === "function" && _c || Object])
 ], ContentComponent);
@@ -800,7 +786,7 @@ var _a, _b, _c;
 
 /***/ }),
 
-/***/ 510:
+/***/ 511:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -849,8 +835,8 @@ __decorate([
 FaqItemComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-faq-item',
-        template: __webpack_require__(674),
-        styles: [__webpack_require__(606)]
+        template: __webpack_require__(675),
+        styles: [__webpack_require__(607)]
     }),
     __metadata("design:paramtypes", [])
 ], FaqItemComponent);
@@ -859,7 +845,7 @@ FaqItemComponent = __decorate([
 
 /***/ }),
 
-/***/ 511:
+/***/ 512:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -885,8 +871,8 @@ var FooterComponent = (function () {
 FooterComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-footer',
-        template: __webpack_require__(675),
-        styles: [__webpack_require__(607)]
+        template: __webpack_require__(676),
+        styles: [__webpack_require__(608)]
     }),
     __metadata("design:paramtypes", [])
 ], FooterComponent);
@@ -895,7 +881,7 @@ FooterComponent = __decorate([
 
 /***/ }),
 
-/***/ 512:
+/***/ 513:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -913,27 +899,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-// import { TourService }  from 'ng2-tour';
 var HeaderComponent = (function () {
-    // constructor(private service: UserService, private tourService: TourService) {
     function HeaderComponent(us) {
-        // console.log('constructor');
         this.us = us;
-        // this.isSigned = this.service.isSigned();
-        // if (service.getCurrentUser() != null) {
-        //   this.userName = service.getCurrentUser().auth.displayName;
-        //   this.photoURL = service.getCurrentUser().auth.photoURL;
-        // }
-        // this.auth = this.service.getAuthState();
-        this.auth = this.us.getAuth();
-        // this.auth.subscribe(function(auth){
-        //   if(authState != null) {
-        //     this.userName = authState.auth.displayName;
-        //     this.photoURL = authState.auth.photoURL;
-        //   }
-        //   this.isSigned = (auth != null);
-        //   // console.log(this.isSigned);
-        // }.bind(this));
+        this.user = this.us.getUser();
     }
     HeaderComponent.prototype.ngOnInit = function () {
     };
@@ -951,8 +920,8 @@ __decorate([
 HeaderComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-header',
-        template: __webpack_require__(676),
-        styles: [__webpack_require__(608)],
+        template: __webpack_require__(677),
+        styles: [__webpack_require__(609)],
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */]) === "function" && _a || Object])
 ], HeaderComponent);
@@ -962,7 +931,7 @@ var _a;
 
 /***/ }),
 
-/***/ 513:
+/***/ 514:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1071,10 +1040,10 @@ var HomeComponent = (function () {
             ]);
             this.ts.start();
         }
-        us.getAuth().subscribe(function (auth) {
+        us.getUser().subscribe(function (user) {
             var _this = this;
-            if (auth != null) {
-                this.uid = auth.uid;
+            if (user != null) {
+                this.uid = user.uid;
                 us.getEncryptedUid(this.uid).subscribe(function (value) { return _this.encryptedUid = value; });
                 this.getProfile();
             }
@@ -1117,8 +1086,8 @@ var HomeComponent = (function () {
 HomeComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-home',
-        template: __webpack_require__(677),
-        styles: [__webpack_require__(609)],
+        template: __webpack_require__(678),
+        styles: [__webpack_require__(610)],
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__profile_service__["a" /* ProfileService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__profile_service__["a" /* ProfileService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_4_ng2_tour__["TourService"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4_ng2_tour__["TourService"]) === "function" && _d || Object])
 ], HomeComponent);
@@ -1128,7 +1097,7 @@ var _a, _b, _c, _d;
 
 /***/ }),
 
-/***/ 514:
+/***/ 515:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1154,8 +1123,8 @@ var LandingComponent = (function () {
 LandingComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-landing',
-        template: __webpack_require__(678),
-        styles: [__webpack_require__(610)]
+        template: __webpack_require__(679),
+        styles: [__webpack_require__(611)]
     }),
     __metadata("design:paramtypes", [])
 ], LandingComponent);
@@ -1164,7 +1133,7 @@ LandingComponent = __decorate([
 
 /***/ }),
 
-/***/ 515:
+/***/ 516:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1209,8 +1178,8 @@ var LoginComponent = (function () {
 LoginComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-login',
-        template: __webpack_require__(679),
-        styles: [__webpack_require__(611)],
+        template: __webpack_require__(680),
+        styles: [__webpack_require__(612)],
         providers: [],
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */]) === "function" && _a || Object])
@@ -1221,7 +1190,7 @@ var _a;
 
 /***/ }),
 
-/***/ 516:
+/***/ 517:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1249,11 +1218,11 @@ var ProfileComponent = (function () {
         this.uid = null;
         this.updateBadges = null;
         var _this = this;
-        us.getAuth().subscribe(function (auth) {
-            if (auth != null) {
-                _this.uid = auth.uid;
-                _this.userName = auth.auth.displayName;
-                _this.photoURL = auth.auth.photoURL;
+        us.getUser().subscribe(function (user) {
+            if (user != null) {
+                _this.uid = user.uid;
+                _this.userName = user.name;
+                _this.photoURL = user.picture;
                 _this.getProfile();
             }
         });
@@ -1328,8 +1297,8 @@ var ProfileComponent = (function () {
 ProfileComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-profile',
-        template: __webpack_require__(680),
-        styles: [__webpack_require__(612)],
+        template: __webpack_require__(681),
+        styles: [__webpack_require__(613)],
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__profile_service__["a" /* ProfileService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__profile_service__["a" /* ProfileService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__user_service__["a" /* UserService */] /*, public dialog: MdDialog*/ !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__user_service__["a" /* UserService */] /*, public dialog: MdDialog*/) === "function" && _b || Object])
 ], ProfileComponent);
@@ -1349,7 +1318,7 @@ var _a, _b;
 
 /***/ }),
 
-/***/ 517:
+/***/ 518:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1375,8 +1344,8 @@ var ProgramsComponent = (function () {
 ProgramsComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-programs',
-        template: __webpack_require__(681),
-        styles: [__webpack_require__(613)],
+        template: __webpack_require__(682),
+        styles: [__webpack_require__(614)],
     }),
     __metadata("design:paramtypes", [])
 ], ProgramsComponent);
@@ -1385,7 +1354,7 @@ ProgramsComponent = __decorate([
 
 /***/ }),
 
-/***/ 518:
+/***/ 519:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1422,8 +1391,8 @@ var SignupComponent = (function () {
 SignupComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-signup',
-        template: __webpack_require__(682),
-        styles: [__webpack_require__(614)],
+        template: __webpack_require__(683),
+        styles: [__webpack_require__(615)],
         providers: [],
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */]) === "function" && _a || Object])
@@ -1434,7 +1403,7 @@ var _a;
 
 /***/ }),
 
-/***/ 519:
+/***/ 520:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1472,12 +1441,12 @@ var _a;
 
 /***/ }),
 
-/***/ 520:
+/***/ 521:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__support_service__ = __webpack_require__(519);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__support_service__ = __webpack_require__(520);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SupportComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -1505,8 +1474,8 @@ var SupportComponent = (function () {
 SupportComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-support',
-        template: __webpack_require__(683),
-        styles: [__webpack_require__(615)],
+        template: __webpack_require__(684),
+        styles: [__webpack_require__(616)],
         providers: [__WEBPACK_IMPORTED_MODULE_1__support_service__["a" /* SupportService */]]
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__support_service__["a" /* SupportService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__support_service__["a" /* SupportService */]) === "function" && _a || Object])
@@ -1517,7 +1486,7 @@ var _a;
 
 /***/ }),
 
-/***/ 521:
+/***/ 522:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1534,7 +1503,7 @@ var environment = {
 
 /***/ }),
 
-/***/ 522:
+/***/ 523:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1547,24 +1516,6 @@ var firebaseConfig = {
     messagingSenderId: "129257487284"
 };
 //# sourceMappingURL=firebase.config.js.map
-
-/***/ }),
-
-/***/ 601:
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(7)();
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/*** EXPORTS FROM exports-loader ***/
-module.exports = module.exports.toString();
 
 /***/ }),
 
@@ -1612,7 +1563,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, ".container-fluid {\n    background-color: #c9cdd0;\n    min-height: calc(100vh - 100px);\n}\n\n.container-fluid .row {\n    padding-left: 12%;\n    padding-right: 12%;\n    padding-top: 50px;\n    padding-bottom: 50px;\n}\n\n.case-card {\n    /*width: 300px;\n    height: 250px;*/\n    margin-top: 15px;\n    margin-bottom: 15px;\n}\n\n.sections .title {\n    padding: 10px 25px;\n    font-size: 22px;\n    color: #283345;\n    text-align: center\n    /*word-wrap: break-word;*/\n}\n\n.glyphicon {\n    font-size: 50px;\n    color: rgba(0, 0, 0, 0.4);\n}\n\n.spacer {\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1 auto;\n            flex: 1 1 auto;\n}\n\n.sections {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    padding-left: 10%;\n    padding-right: 10%;\n}", ""]);
+exports.push([module.i, "", ""]);
 
 // exports
 
@@ -1630,7 +1581,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, ".case-action {\n    position: absolute;\n    right: 7%;\n    top: 7%;\n}", ""]);
+exports.push([module.i, ".container-fluid {\n    background-color: #c9cdd0;\n    min-height: calc(100vh - 100px);\n}\n\n.container-fluid .row {\n    padding-left: 12%;\n    padding-right: 12%;\n    padding-top: 50px;\n    padding-bottom: 50px;\n}\n\n.case-card {\n    /*width: 300px;\n    height: 250px;*/\n    margin-top: 15px;\n    margin-bottom: 15px;\n}\n\n.sections .title {\n    padding: 10px 25px;\n    font-size: 22px;\n    color: #283345;\n    text-align: center\n    /*word-wrap: break-word;*/\n}\n\n.glyphicon {\n    font-size: 50px;\n    color: rgba(0, 0, 0, 0.4);\n}\n\n.spacer {\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1 auto;\n            flex: 1 1 auto;\n}\n\n.sections {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    padding-left: 10%;\n    padding-right: 10%;\n}", ""]);
 
 // exports
 
@@ -1648,7 +1599,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, ".container-fluid {\n    border-bottom-color: #adb1b4;\n    border-bottom-width: 2px;\n    border-bottom-style: solid;\n    padding-bottom: 10px;\n    margin-bottom: 20px;\n}\n\n.question {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    font-size: 18px;\n    font-weight: 600;\n    line-height: 28px;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    padding: 10px 10px 0px 10px;\n}\n\n.answer {\n    font-size: 16px;\n    line-height: 28px;\n    padding: 0px 10px 0px 10px;\n}\n\n.spacer {\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1 auto;\n            flex: 1 1 auto;\n}", ""]);
+exports.push([module.i, ".case-action {\n    position: absolute;\n    right: 7%;\n    top: 7%;\n}", ""]);
 
 // exports
 
@@ -1666,7 +1617,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, ".app-footer {\n    background-color: #283345;\n    padding-left: 3%;\n    padding-right: 3%;\n    padding-top: 40px;\n    padding-bottom: 40px;\n    max-height: 220px;\n}\n\n.app-footer>h2 {\n    font-size: 18px;\n    text-align: right;\n    margin-top: 120px;\n    color: white;\n}\n\n@media only screen and (max-width: 992px) {\n    .app-footer {\n        display: -webkit-box;\n        display: -ms-flexbox;\n        display: flex;\n        -webkit-box-align: center;\n            -ms-flex-align: center;\n                align-items: center;\n        -webkit-box-pack: center;\n            -ms-flex-pack: center;\n                justify-content: center;\n        height: 85px;\n    }\n    .app-footer>h2 {\n        font-size: 16px;\n        margin: 0px;\n        padding: 0px;\n    }\n}", ""]);
+exports.push([module.i, ".container-fluid {\n    border-bottom-color: #adb1b4;\n    border-bottom-width: 2px;\n    border-bottom-style: solid;\n    padding-bottom: 10px;\n    margin-bottom: 20px;\n}\n\n.question {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    font-size: 18px;\n    font-weight: 600;\n    line-height: 28px;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    padding: 10px 10px 0px 10px;\n}\n\n.answer {\n    font-size: 16px;\n    line-height: 28px;\n    padding: 0px 10px 0px 10px;\n}\n\n.spacer {\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1 auto;\n            flex: 1 1 auto;\n}", ""]);
 
 // exports
 
@@ -1684,7 +1635,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, ".app-header {\n    background-color: #283345;\n    padding-left: 6%;\n    padding-right: 6%;\n    padding-top: 20px;\n    padding-bottom: 20px;\n}\n\n.app-header .logo {\n    height: 160px;\n}\n\nmd-toolbar {\n    background: #283345;\n    padding-left: 30px;\n    padding-right: 30px;\n    padding-top: 10px;\n    padding-bottom: 10px;\n}\n\nmd-toolbar .logo {\n    height: 50px;\n}\n\n.spacer {\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1 auto;\n            flex: 1 1 auto;\n}\n\n.app-header .left {\n    float: left;\n}\n\n.app-header .right {\n    float: right;\n    padding-top: 45px;\n}\n\n.modal {\n    text-align: center;\n}\n\n@media only screen and (min-width: 768px) {\n    .modal:before {\n        display: inline-block;\n        vertical-align: middle;\n        content: \" \";\n        height: 100%;\n    }\n}\n\n.modal-dialog {\n    display: inline-block;\n    text-align: left;\n    vertical-align: middle;\n}", ""]);
+exports.push([module.i, ".app-footer {\n    background-color: #283345;\n    padding-left: 3%;\n    padding-right: 3%;\n    padding-top: 40px;\n    padding-bottom: 40px;\n    max-height: 220px;\n}\n\n.app-footer>h2 {\n    font-size: 18px;\n    text-align: right;\n    margin-top: 120px;\n    color: white;\n}\n\n@media only screen and (max-width: 992px) {\n    .app-footer {\n        display: -webkit-box;\n        display: -ms-flexbox;\n        display: flex;\n        -webkit-box-align: center;\n            -ms-flex-align: center;\n                align-items: center;\n        -webkit-box-pack: center;\n            -ms-flex-pack: center;\n                justify-content: center;\n        height: 85px;\n    }\n    .app-footer>h2 {\n        font-size: 16px;\n        margin: 0px;\n        padding: 0px;\n    }\n}", ""]);
 
 // exports
 
@@ -1702,7 +1653,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, ".container-fluid {\n    background-color: #c9cdd0;\n    min-height: calc(100vh - 100px);\n}\n\n.container-fluid .row {\n    padding-left: 12%;\n    padding-right: 12%;\n    padding-top: 12vh;\n    padding-bottom: 12vh;\n}\n\n.section {\n    margin-top: 30px;\n    margin-bottom: 30px;\n}\n\n.section .title {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    background-color: #283345;\n    padding-top: 0.5em;\n    padding-bottom: 0.5em;\n}\n\n.section .title span {\n    font-size: 24px;\n    color: #ddd;\n}\n\n.panel {\n    background-color: rgba(255, 255, 255, 0.5);\n    box-shadow: 6px 10px 12px 2px #8a8a8a;\n    padding: 0;\n}\n\n.welcome {\n    font-size: 28px;\n    line-height: 1.3em;\n}\n\n@media only screen and (max-width: 768px) {\n    .welcome {\n        font-size: 16px;\n    }\n    .section .title span {\n        font-size: 18px;\n    }\n}", ""]);
+exports.push([module.i, ".app-header {\n    background-color: #283345;\n    padding-left: 6%;\n    padding-right: 6%;\n    padding-top: 20px;\n    padding-bottom: 20px;\n}\n\n.app-header .logo {\n    height: 160px;\n}\n\nmd-toolbar {\n    background: #283345;\n    padding-left: 30px;\n    padding-right: 30px;\n    padding-top: 10px;\n    padding-bottom: 10px;\n}\n\nmd-toolbar .logo {\n    height: 50px;\n}\n\n.spacer {\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1 auto;\n            flex: 1 1 auto;\n}\n\n.app-header .left {\n    float: left;\n}\n\n.app-header .right {\n    float: right;\n    padding-top: 45px;\n}\n\n.modal {\n    text-align: center;\n}\n\n@media only screen and (min-width: 768px) {\n    .modal:before {\n        display: inline-block;\n        vertical-align: middle;\n        content: \" \";\n        height: 100%;\n    }\n}\n\n.modal-dialog {\n    display: inline-block;\n    text-align: left;\n    vertical-align: middle;\n}", ""]);
 
 // exports
 
@@ -1720,7 +1671,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, ".back {\n    position: relative;\n    width: 100%;\n    padding-top: 40%;\n    min-height: calc(100vh - 100px);\n    background: url(" + __webpack_require__(168) + ") center/cover no-repeat;\n}\n\n.back div {\n    position: absolute;\n    left: 0;\n    top: 0;\n    padding-left: 10%;\n    padding-top: 8%;\n}\n\n.back .ourword span {\n    /*line-height: 85px;*/\n    color: rgb(40, 51, 69);\n}\n\n.back .employee {\n    font-size: 40px;\n}\n\n.back .tobe {\n    font-size: 50px;\n}\n\n.back .healthier {\n    font-size: 60px;\n    font-weight: bold;\n    color: #fd582a !important;\n}\n\n@media only screen and (max-width: 768px) {\n    .back {\n        height: calc(100vh - 85px);\n    }\n    .back .employee {\n        font-size: 20px;\n    }\n    .back .tobe {\n        font-size: 25px;\n    }\n    .back .healthier {\n        font-size: 30px;\n    }\n}", ""]);
+exports.push([module.i, ".container-fluid {\n    background-color: #c9cdd0;\n    min-height: calc(100vh - 100px);\n}\n\n.container-fluid .row {\n    padding-left: 12%;\n    padding-right: 12%;\n    padding-top: 12vh;\n    padding-bottom: 12vh;\n}\n\n.section {\n    margin-top: 30px;\n    margin-bottom: 30px;\n}\n\n.section .title {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    background-color: #283345;\n    padding-top: 0.5em;\n    padding-bottom: 0.5em;\n}\n\n.section .title span {\n    font-size: 24px;\n    color: #ddd;\n}\n\n.panel {\n    background-color: rgba(255, 255, 255, 0.5);\n    box-shadow: 6px 10px 12px 2px #8a8a8a;\n    padding: 0;\n}\n\n.welcome {\n    font-size: 28px;\n    line-height: 1.3em;\n}\n\n@media only screen and (max-width: 768px) {\n    .welcome {\n        font-size: 16px;\n    }\n    .section .title span {\n        font-size: 18px;\n    }\n}", ""]);
 
 // exports
 
@@ -1735,12 +1686,10 @@ module.exports = module.exports.toString();
 
 exports = module.exports = __webpack_require__(7)();
 // imports
-exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Exo:100,200,400);", ""]);
-exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:700,400,300);", ""]);
-exports.i(__webpack_require__(591), "");
+
 
 // module
-exports.push([module.i, ".body {\n    position: absolute;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    bottom: 0px;\n    width: auto;\n    height: auto;\n    background-image: url(" + __webpack_require__(168) + ");\n    background-size: cover;\n    background-position: center;\n    filter: blur(5px);\n    -webkit-filter: blur(5px);\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n\n.container-fluid {\n    width: 100%;\n    height: 100%;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n\n.grad {\n    position: absolute;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    bottom: 0px;\n    width: auto;\n    height: auto;\n    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0.65)));\n    /* Chrome,Safari4+ */\n    opacity: 0.7;\n}\n\n.header {\n    position: absolute;\n    top: calc(50% - 35px);\n    left: calc(50% - 255px);\n    z-index: 2;\n}\n\n.header div {\n    float: left;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 35px;\n    font-weight: 200;\n}\n\n.header div span {\n    color: #5379fa !important;\n}\n\n.login {\n    max-width: 350px;\n    padding: 10px;\n}\n\n.login input[type=text] {\n    width: 100%;\n    height: 30px;\n    background: transparent;\n    border: 1px solid rgba(255, 255, 255, 0.6);\n    border-radius: 2px;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 4px;\n    margin-top: 5px;\n    margin-bottom: 5px;\n}\n\n.login input[type=email] {\n    width: 100%;\n    height: 30px;\n    background: transparent;\n    border: 1px solid rgba(255, 255, 255, 0.6);\n    border-radius: 2px;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 4px;\n    margin-top: 5px;\n    margin-bottom: 5px;\n}\n\n.login input[type=password] {\n    width: 100%;\n    height: 30px;\n    background: transparent;\n    border: 1px solid rgba(255, 255, 255, 0.6);\n    border-radius: 2px;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 4px;\n    margin-top: 5px;\n    margin-bottom: 5px;\n}\n\n.login input[type=button] {\n    width: calc(100% + 10px);\n    height: 35px;\n    background: #fff;\n    border: 1px solid #fff;\n    cursor: pointer;\n    border-radius: 2px;\n    color: #a18d6c;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 6px;\n    margin-top: 20px;\n}\n\n.login input[type=button]:hover {\n    opacity: 0.8;\n}\n\n.login input[type=button]:active {\n    opacity: 0.6;\n}\n\n.login input[type=text]:focus {\n    outline: none;\n    border: 1px solid rgba(255, 255, 255, 0.9);\n}\n\n.login input[type=email]:focus {\n    outline: none;\n    border: 1px solid rgba(255, 255, 255, 0.9);\n}\n\n.login input[type=password]:focus {\n    outline: none;\n    border: 1px solid rgba(255, 255, 255, 0.9);\n}\n\n.login input[type=button]:focus {\n    outline: none;\n}\n\n::-webkit-input-placeholder {\n    color: rgba(255, 255, 255, 0.6);\n}\n\n::-moz-input-placeholder {\n    color: rgba(255, 255, 255, 0.6);\n}\n\n.login button {\n    width: calc(100% + 10px);\n    margin-left: 0px;\n    margin-right: 0px;\n    border-radius: 1px;\n}", ""]);
+exports.push([module.i, ".back {\n    position: relative;\n    width: 100%;\n    padding-top: 40%;\n    min-height: calc(100vh - 100px);\n    background: url(" + __webpack_require__(168) + ") center/cover no-repeat;\n}\n\n.back div {\n    position: absolute;\n    left: 0;\n    top: 0;\n    padding-left: 10%;\n    padding-top: 8%;\n}\n\n.back .ourword span {\n    /*line-height: 85px;*/\n    color: rgb(40, 51, 69);\n}\n\n.back .employee {\n    font-size: 40px;\n}\n\n.back .tobe {\n    font-size: 50px;\n}\n\n.back .healthier {\n    font-size: 60px;\n    font-weight: bold;\n    color: #fd582a !important;\n}\n\n@media only screen and (max-width: 768px) {\n    .back {\n        height: calc(100vh - 85px);\n    }\n    .back .employee {\n        font-size: 20px;\n    }\n    .back .tobe {\n        font-size: 25px;\n    }\n    .back .healthier {\n        font-size: 30px;\n    }\n}", ""]);
 
 // exports
 
@@ -1755,10 +1704,12 @@ module.exports = module.exports.toString();
 
 exports = module.exports = __webpack_require__(7)();
 // imports
-
+exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Exo:100,200,400);", ""]);
+exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:700,400,300);", ""]);
+exports.i(__webpack_require__(592), "");
 
 // module
-exports.push([module.i, ".container-fluid {\n    background-color: #c9cdd0;\n    min-height: calc(100vh - 100px);\n}\n\n.container-fluid .row {\n    padding-left: 12%;\n    padding-right: 12%;\n    padding-top: 50px;\n    padding-bottom: 50px;\n    min-height: 640px;\n}\n\n.header {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 40px;\n    background: #283345;\n    border-color: #283345;\n    color: white;\n    font-size: 18px;\n    padding-left: 3%;\n    padding-top: 7px;\n    z-index: 1;\n}\n\n.header::after {\n    position: absolute;\n    content: '';\n    top: 100%;\n    margin-left: -50px;\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    border-top: 10px solid #283345;\n}\n\n.contact-form {\n    border-width: 1px;\n    border-style: ridge;\n    border-color: gray;\n    background: #e6ebee;\n    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n    padding: 5% 10%;\n}\n\n.contact-form label {\n    font-size: 16px;\n    color: #adb0b2;\n}\n\n.contact-form button {\n    background: #fc582a;\n    color: #fcc5b6;\n    border-radius: 0px;\n}\n\n.h2 {\n    color: #283345;\n}\n\n.userInfo-tile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    background: #283345;\n    width: 100%;\n    height: 100%;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    text-align: center;\n}\n\n.userInfo-tile .value {\n    color: #c9cdd0;\n    font-size: 36px;\n}\n\n.userInfo-tile .key {\n    color: #c9cdd0;\n    font-size: 10px;\n}\n\n.userInfo-general {\n    border-right: 3px solid #c4c8cb;\n}\n\n.userInfo-general>div {\n    margin-bottom: 20px;\n}\n\n.profile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n\n.profile .info-panel {\n    height: 100%;\n}\n\n@media only screen and (max-width: 992px) {\n    .profile {\n        display: block;\n    }\n    .userInfo-general {\n        border-right: 0px solid #c4c8cb;\n    }\n}", ""]);
+exports.push([module.i, ".body {\n    position: absolute;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    bottom: 0px;\n    width: auto;\n    height: auto;\n    background-image: url(" + __webpack_require__(168) + ");\n    background-size: cover;\n    background-position: center;\n    filter: blur(5px);\n    -webkit-filter: blur(5px);\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n\n.container-fluid {\n    width: 100%;\n    height: 100%;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n}\n\n.grad {\n    position: absolute;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    bottom: 0px;\n    width: auto;\n    height: auto;\n    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0.65)));\n    /* Chrome,Safari4+ */\n    opacity: 0.7;\n}\n\n.header {\n    position: absolute;\n    top: calc(50% - 35px);\n    left: calc(50% - 255px);\n    z-index: 2;\n}\n\n.header div {\n    float: left;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 35px;\n    font-weight: 200;\n}\n\n.header div span {\n    color: #5379fa !important;\n}\n\n.login {\n    max-width: 350px;\n    padding: 10px;\n}\n\n.login input[type=text] {\n    width: 100%;\n    height: 30px;\n    background: transparent;\n    border: 1px solid rgba(255, 255, 255, 0.6);\n    border-radius: 2px;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 4px;\n    margin-top: 5px;\n    margin-bottom: 5px;\n}\n\n.login input[type=email] {\n    width: 100%;\n    height: 30px;\n    background: transparent;\n    border: 1px solid rgba(255, 255, 255, 0.6);\n    border-radius: 2px;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 4px;\n    margin-top: 5px;\n    margin-bottom: 5px;\n}\n\n.login input[type=password] {\n    width: 100%;\n    height: 30px;\n    background: transparent;\n    border: 1px solid rgba(255, 255, 255, 0.6);\n    border-radius: 2px;\n    color: #fff;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 4px;\n    margin-top: 5px;\n    margin-bottom: 5px;\n}\n\n.login input[type=button] {\n    width: calc(100% + 10px);\n    height: 35px;\n    background: #fff;\n    border: 1px solid #fff;\n    cursor: pointer;\n    border-radius: 2px;\n    color: #a18d6c;\n    font-family: 'Exo', sans-serif;\n    font-size: 16px;\n    font-weight: 400;\n    padding: 6px;\n    margin-top: 20px;\n}\n\n.login input[type=button]:hover {\n    opacity: 0.8;\n}\n\n.login input[type=button]:active {\n    opacity: 0.6;\n}\n\n.login input[type=text]:focus {\n    outline: none;\n    border: 1px solid rgba(255, 255, 255, 0.9);\n}\n\n.login input[type=email]:focus {\n    outline: none;\n    border: 1px solid rgba(255, 255, 255, 0.9);\n}\n\n.login input[type=password]:focus {\n    outline: none;\n    border: 1px solid rgba(255, 255, 255, 0.9);\n}\n\n.login input[type=button]:focus {\n    outline: none;\n}\n\n::-webkit-input-placeholder {\n    color: rgba(255, 255, 255, 0.6);\n}\n\n::-moz-input-placeholder {\n    color: rgba(255, 255, 255, 0.6);\n}\n\n.login button {\n    width: calc(100% + 10px);\n    margin-left: 0px;\n    margin-right: 0px;\n    border-radius: 1px;\n}", ""]);
 
 // exports
 
@@ -1776,7 +1727,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".container-fluid {\n    background-color: #c9cdd0;\n    min-height: calc(100vh - 100px);\n}\n\n.container-fluid .row {\n    padding-left: 12%;\n    padding-right: 12%;\n    padding-top: 50px;\n    padding-bottom: 50px;\n    min-height: 640px;\n}\n\n.header {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 40px;\n    background: #283345;\n    border-color: #283345;\n    color: white;\n    font-size: 18px;\n    padding-left: 3%;\n    padding-top: 7px;\n    z-index: 1;\n}\n\n.header::after {\n    position: absolute;\n    content: '';\n    top: 100%;\n    margin-left: -50px;\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    border-top: 10px solid #283345;\n}\n\n.contact-form {\n    border-width: 1px;\n    border-style: ridge;\n    border-color: gray;\n    background: #e6ebee;\n    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n    padding: 5% 10%;\n}\n\n.contact-form label {\n    font-size: 16px;\n    color: #adb0b2;\n}\n\n.contact-form button {\n    background: #fc582a;\n    color: #fcc5b6;\n    border-radius: 0px;\n}\n\n.h2 {\n    color: #283345;\n}\n\n.userInfo-tile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    background: #283345;\n    width: 100%;\n    height: 100%;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    text-align: center;\n}\n\n.userInfo-tile .value {\n    color: #c9cdd0;\n    font-size: 36px;\n}\n\n.userInfo-tile .key {\n    color: #c9cdd0;\n    font-size: 10px;\n}\n\n.userInfo-general {\n    border-right: 3px solid #c4c8cb;\n}\n\n.userInfo-general>div {\n    margin-bottom: 20px;\n}\n\n.profile {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n\n.profile .info-panel {\n    height: 100%;\n}\n\n@media only screen and (max-width: 992px) {\n    .profile {\n        display: block;\n    }\n    .userInfo-general {\n        border-right: 0px solid #c4c8cb;\n    }\n}", ""]);
 
 // exports
 
@@ -1787,6 +1738,24 @@ module.exports = module.exports.toString();
 /***/ }),
 
 /***/ 614:
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(7)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/*** EXPORTS FROM exports-loader ***/
+module.exports = module.exports.toString();
+
+/***/ }),
+
+/***/ 615:
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)();
@@ -1805,7 +1774,7 @@ module.exports = module.exports.toString();
 
 /***/ }),
 
-/***/ 615:
+/***/ 616:
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)();
@@ -1823,7 +1792,7 @@ module.exports = module.exports.toString();
 
 /***/ }),
 
-/***/ 634:
+/***/ 635:
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -2072,85 +2041,78 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 634;
+webpackContext.id = 635;
 
-
-/***/ }),
-
-/***/ 669:
-/***/ (function(module, exports) {
-
-module.exports = "<router-outlet> </router-outlet>"
 
 /***/ }),
 
 /***/ 670:
 /***/ (function(module, exports) {
 
-module.exports = "<!--<div mdTooltip=\"{{badge.description}}\" mdTooltipPosition=\"below\" [ngStyle]=\"{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}\" style=\"width: 100%; padding-top:100%\" (click)=\"launchModal()\"></div>-->\n<!--<div [ngStyle]=\"{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}\" style=\"width: 100%; padding-top:100%\" attr.data-html=\"<div class='header'>{{badge.description}}</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>\">-->\n<div [ngStyle]=\"{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}\" style=\"width: 100%; padding-top:100%\" attr.data-html=\"{{badge.tip}}\">\n</div>\n<h6 style=\"height:40px\"> {{badge.name}} </h6>"
+module.exports = "<router-outlet> </router-outlet>"
 
 /***/ }),
 
 /***/ 671:
 /***/ (function(module, exports) {
 
-module.exports = "<div>\n    <h1 md-dialog-title> Congratulation! </h1>\n    <md-dialog-content style=\"display:flex; justify-content: center; align-items: center\">\n        <div style=\"text-align: center; width:20vw\">\n            <br>\n            <img src=\"assets/images/badges/{{badge.image_e}}\" style=\"width:150px\">\n            <br>\n            <br>\n            <br>\n            <!--<br>\n            <br>\n            <h4> You have been awarded\n                <{{badge.name}}> badge. </h4>-->\n        </div>\n    </md-dialog-content>\n    <md-dialog-actions style=\"display:flex; justify-content: center; align-items: center; margin:0px\">\n        <!--<button md-raised-button md-dialog-close style=\"width:50%\">Close</button>-->\n        <button md-button md-dialog-close style=\"width:50%; font-size:18px\">Close</button>\n    </md-dialog-actions>\n</div>"
+module.exports = "<!--<div mdTooltip=\"{{badge.description}}\" mdTooltipPosition=\"below\" [ngStyle]=\"{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}\" style=\"width: 100%; padding-top:100%\" (click)=\"launchModal()\"></div>-->\n<!--<div [ngStyle]=\"{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}\" style=\"width: 100%; padding-top:100%\" attr.data-html=\"<div class='header'>{{badge.description}}</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>\">-->\n<div [ngStyle]=\"{'background': 'url(assets/images/badges/' + (badge.enabled ? badge.image_e:badge.image_d) + ') center/cover no-repeat'}\" style=\"width: 100%; padding-top:100%\" attr.data-html=\"{{badge.tip}}\">\n</div>\n<h6 style=\"height:40px\"> {{badge.name}} </h6>"
 
 /***/ }),
 
 /***/ 672:
 /***/ (function(module, exports) {
 
-module.exports = "<app-header tabIndex=\"1\"> </app-header>\n\n<!--<div class=\"container-fluid\">\n    <div class=\"row\">\n\n        <div *ngFor=\"let section of sections; let i=index\" (swipeleft)=\"swipe(i,$event.\">\n            {{section}}\n            <div *ngFor=\"let case of cases\" class=\"col-xs-4\" [style.display]=\"case.obj.case.category==='c'+(i+1) ? 'block':'none'\">\n                <md-card class=\"case-card\">\n                    <img md-card-image src=\"assets/images/{{case.obj.case.thumb}}\">\n                    <md-card-content>\n                        <p>\n                            {{case.obj.case.title}}\n                        </p>\n                    </md-card-content>\n\n                </md-card>\n            </div>\n            <br>\n        </div>\n\n    </div>\n</div>-->\n\n<!--<button routerLink=\"/home\"> home </button>-->\n\n<!--<div id=\"impress\">-->\n<!--<div id=\"bored\" class=\"step slide\" data-x=\"-1000\" data-y=\"-1500\">-->\n<!--<div class=\"step slide\" data-x=\"-1000\" data-y=\"-1500\" data-z=\"-1000\" style=\"width:80vw; height:80vh\">\n        <q>Aren’t you just <b>bored</b> with all those slides-based presentations?</q>\n    </div>\n    <div class=\"step slide\" data-x=\"0\" data-y=\"-1500\" data-z=\"-2000\" style=\"width:80vw; height:80vh\">\n        <q>Don’t you think that presentations given <strong>in modern browsers</strong> shouldn’t <strong>copy the limits</strong> of ‘classic’ slide decks?</q>\n    </div>\n\n    <div class=\"step slide\" data-x=\"1000\" data-y=\"-1500\" data-z=\"-3000\" style=\"width:80vw; height:80vh\">\n        <q>Would you like to <strong>impress your audience</strong> with <strong>stunning visualization</strong> of your talk?</q>\n    </div>-->\n<!--</div>-->\n\n<!--<div class=\"container-fluid\" (swipeleft)=\"swipe($event.type)\" (swiperight)=\"swipe($event.type)\">-->\n<div class=\"container-fluid\">\n    <div class=\"row animated fadeInUp\" *ngFor=\"let section of (program | async)?.sections.categories; let i=index\">\n\n        <!--<div class=\"col-xs-12 sections\" style=\"padding-bottom: 40px; padding-top: 40px\">-->\n        <div class=\"col-xs-12 sections\" style=\"background-color:#283345\">\n            <!--<span class=\"glyphicon glyphicon-chevron-left\"></span>-->\n            <span class=\"spacer\"></span>\n            <span class=\"title\" style=\"color: #ddd\"> {{ section }}</span>\n            <span class=\"spacer\"></span>\n            <!--<a href=\"#\"><span class=\"glyphicon glyphicon-chevron-right\"></span></a>-->\n        </div>\n\n        <div class=\"col-xs-12\" style=\"background:rgba(255,255,255,0.5); padding:10px 25px;\">\n            <ng-container *ngFor=\"let case of (program | async)?.cases; let j=index;\">\n                <div *ngIf=\"case.obj.case.category==='c' +(i+1)\" class=\"case-card col-xs-12 col-sm-6 col-md-4 col-lg-3\">\n\n                    <ng-container *ngIf=\"i==0 && j==7\" tourAnchor=\"first_case\"></ng-container>\n                    <div style=\"width:100%; padding-top:90%\">\n                        <div style=\"position:absolute; width:100%; height:100%; left:0; top:0\">\n                            <md-card (click)=\"launchCase(programName, case.id, encryptedUid)\" style=\"margin-left:3%; margin-right:3%; height:100%; cursor:pointer\">\n                                <img md-card-image src=\"assets/images/{{case.obj.case.thumb}}\">\n                                <md-card-content>\n                                    <p>\n                                        {{case.obj.case.title}}\n                                    </p>\n                                </md-card-content>\n                            </md-card>\n                        </div>\n                    </div>\n\n                </div>\n            </ng-container>\n        </div>\n\n    </div>\n</div>\n\n<app-footer> </app-footer>"
+module.exports = "<div>\n    <h1 md-dialog-title> Congratulation! </h1>\n    <md-dialog-content style=\"display:flex; justify-content: center; align-items: center\">\n        <div style=\"text-align: center; width:20vw\">\n            <br>\n            <img src=\"assets/images/badges/{{badge.image_e}}\" style=\"width:150px\">\n            <br>\n            <br>\n            <br>\n            <!--<br>\n            <br>\n            <h4> You have been awarded\n                <{{badge.name}}> badge. </h4>-->\n        </div>\n    </md-dialog-content>\n    <md-dialog-actions style=\"display:flex; justify-content: center; align-items: center; margin:0px\">\n        <!--<button md-raised-button md-dialog-close style=\"width:50%\">Close</button>-->\n        <button md-button md-dialog-close style=\"width:50%; font-size:18px\">Close</button>\n    </md-dialog-actions>\n</div>"
 
 /***/ }),
 
 /***/ 673:
 /***/ (function(module, exports) {
 
-module.exports = "<iframe class=\"fullscreen e2e-iframe-trusted-src\" [src]=\"caseUrl\">\n</iframe>\n\n<div class=\"case-action\">\n    <a md-fab (click)=\"location.back()\">\n        <md-icon>exit_to_app</md-icon>\n    </a>\n</div>"
+module.exports = "<app-header tabIndex=\"1\"> </app-header>\n\n<!--<div class=\"container-fluid\">\n    <div class=\"row\">\n\n        <div *ngFor=\"let section of sections; let i=index\" (swipeleft)=\"swipe(i,$event.\">\n            {{section}}\n            <div *ngFor=\"let case of cases\" class=\"col-xs-4\" [style.display]=\"case.obj.case.category==='c'+(i+1) ? 'block':'none'\">\n                <md-card class=\"case-card\">\n                    <img md-card-image src=\"assets/images/{{case.obj.case.thumb}}\">\n                    <md-card-content>\n                        <p>\n                            {{case.obj.case.title}}\n                        </p>\n                    </md-card-content>\n\n                </md-card>\n            </div>\n            <br>\n        </div>\n\n    </div>\n</div>-->\n\n<!--<button routerLink=\"/home\"> home </button>-->\n\n<!--<div id=\"impress\">-->\n<!--<div id=\"bored\" class=\"step slide\" data-x=\"-1000\" data-y=\"-1500\">-->\n<!--<div class=\"step slide\" data-x=\"-1000\" data-y=\"-1500\" data-z=\"-1000\" style=\"width:80vw; height:80vh\">\n        <q>Aren’t you just <b>bored</b> with all those slides-based presentations?</q>\n    </div>\n    <div class=\"step slide\" data-x=\"0\" data-y=\"-1500\" data-z=\"-2000\" style=\"width:80vw; height:80vh\">\n        <q>Don’t you think that presentations given <strong>in modern browsers</strong> shouldn’t <strong>copy the limits</strong> of ‘classic’ slide decks?</q>\n    </div>\n\n    <div class=\"step slide\" data-x=\"1000\" data-y=\"-1500\" data-z=\"-3000\" style=\"width:80vw; height:80vh\">\n        <q>Would you like to <strong>impress your audience</strong> with <strong>stunning visualization</strong> of your talk?</q>\n    </div>-->\n<!--</div>-->\n\n<!--<div class=\"container-fluid\" (swipeleft)=\"swipe($event.type)\" (swiperight)=\"swipe($event.type)\">-->\n<div class=\"container-fluid\">\n    <div class=\"row animated fadeInUp\" *ngFor=\"let section of (program | async)?.sections.categories; let i=index\">\n\n        <!--<div class=\"col-xs-12 sections\" style=\"padding-bottom: 40px; padding-top: 40px\">-->\n        <div class=\"col-xs-12 sections\" style=\"background-color:#283345\">\n            <!--<span class=\"glyphicon glyphicon-chevron-left\"></span>-->\n            <span class=\"spacer\"></span>\n            <span class=\"title\" style=\"color: #ddd\"> {{ section }}</span>\n            <span class=\"spacer\"></span>\n            <!--<a href=\"#\"><span class=\"glyphicon glyphicon-chevron-right\"></span></a>-->\n        </div>\n\n        <div class=\"col-xs-12\" style=\"background:rgba(255,255,255,0.5); padding:10px 25px;\">\n            <ng-container *ngFor=\"let case of (program | async)?.cases; let j=index;\">\n                <div *ngIf=\"case.obj.case.category==='c' +(i+1)\" class=\"case-card col-xs-12 col-sm-6 col-md-4 col-lg-3\">\n\n                    <ng-container *ngIf=\"i==0 && j==7\" tourAnchor=\"first_case\"></ng-container>\n                    <div style=\"width:100%; padding-top:90%\">\n                        <div style=\"position:absolute; width:100%; height:100%; left:0; top:0\">\n                            <md-card (click)=\"launchCase(programName, case.id, encryptedUid)\" style=\"margin-left:3%; margin-right:3%; height:100%; cursor:pointer\">\n                                <img md-card-image src=\"assets/images/{{case.obj.case.thumb}}\">\n                                <md-card-content>\n                                    <p>\n                                        {{case.obj.case.title}}\n                                    </p>\n                                </md-card-content>\n                            </md-card>\n                        </div>\n                    </div>\n\n                </div>\n            </ng-container>\n        </div>\n\n    </div>\n</div>\n\n<app-footer> </app-footer>"
 
 /***/ }),
 
 /***/ 674:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container-fluid\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 question\" data-toggle=\"collapse\" attr.data-target=\"#{{id}}\" (click)=\"qClick()\">\n            {{q}}\n            <div class=\"spacer\"> </div>\n            <md-icon> {{expanded ? 'expand_less' : 'expand_more'}} </md-icon>\n        </div>\n        <div class=\"col-xs-12 answer collapse\" [attr.id]=\"id\">\n            <br> {{a}}\n        </div>\n    </div>\n</div>"
+module.exports = "<iframe class=\"fullscreen e2e-iframe-trusted-src\" [src]=\"caseUrl\">\n</iframe>\n\n<div class=\"case-action\">\n    <a md-fab (click)=\"location.back()\">\n        <md-icon>exit_to_app</md-icon>\n    </a>\n</div>"
 
 /***/ }),
 
 /***/ 675:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container-fluid\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 app-footer\">\n            <h2> © 2017 All rights reserved. Viven Health, Inc. </h2>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"container-fluid\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 question\" data-toggle=\"collapse\" attr.data-target=\"#{{id}}\" (click)=\"qClick()\">\n            {{q}}\n            <div class=\"spacer\"> </div>\n            <md-icon> {{expanded ? 'expand_less' : 'expand_more'}} </md-icon>\n        </div>\n        <div class=\"col-xs-12 answer collapse\" [attr.id]=\"id\">\n            <br> {{a}}\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
 /***/ 676:
 /***/ (function(module, exports) {
 
-module.exports = "<ng-container appBadgeAward></ng-container>\n\n<!--<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"isSigned\">-->\n<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"(auth | async) != null\">\n    <button md-icon-button [mdMenuTriggerFor]=\"menu\">\n        <md-icon>menu</md-icon>\n    </button>\n\n    <md-menu #menu=\"mdMenu\">\n        <button md-menu-item routerLink=\"/home\">\n            <md-icon>home</md-icon>\n            <span>HOME</span>\n        </button>\n        <button md-menu-item routerLink=\"/cases\">\n            <md-icon>slideshow</md-icon>\n            <span>PROGRAMS</span>\n        </button>\n        <button md-menu-item routerLink=\"/profile\">\n            <md-icon>person</md-icon>\n            <span>PROFILE</span>\n        </button>\n        <button md-menu-item routerLink=\"/support\">\n            <md-icon>help_outline</md-icon>\n            <span>SUPPORT</span>\n        </button>\n        <hr>\n        <button md-menu-item (click)=\"signout()\">\n            <md-icon>lock_outline</md-icon>\n            <span>LOGOUT</span>\n        </button>\n    </md-menu>\n    &nbsp; &nbsp;\n    <img class=\"logo\" src=\"assets/images/logo.png\" />\n</md-toolbar>\n\n<!--<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"isSigned\">-->\n<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"(auth | async) != null\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 app-header\">\n            <div class=\"left\">\n                <div style=\"display:inline-block\">\n                    <img class=\"logo\" src=\"assets/images/logo.png\" />\n                </div>\n\n\n                <div style=\"display:inline-block; padding-left: 100px; \">\n                    <div class=\"ui secondary pointing menu\">\n                        <div tourAnchor=\"homepage\">\n                            <a class=\"item {{tabIndex == 0 && 'active'}}\" routerLink=\"/home\">\n                                HOME\n                            </a>\n                        </div>\n                        <div tourAnchor=\"programs\">\n                            <a class=\"item {{tabIndex == 1 && 'active'}}\" routerLink=\"/cases\">\n                            PROGRAMS\n                        </a>\n                        </div>\n                        <div tourAnchor=\"profile\">\n                            <a class=\"item {{tabIndex == 2 && 'active'}}\" routerLink=\"/profile\">\n                            YOUR PROFILE\n                        </a>\n                        </div>\n                        <a class=\"item {{tabIndex == 3 && 'active'}}\" routerLink=\"/support\">\n                            SUPPORT\n                        </a>\n                    </div>\n                </div>\n\n\n            </div>\n\n            <!--{{(auth | async) == null}}-->\n\n            <div class=\"right\">\n                <div style=\"display:flex; align-items: center; justify-content: center\">\n                    <!--<div style=\"color:rgb(212,214,215); margin-right: 16px\">{{(userName)}}</div>-->\n                    <div style=\"color:rgb(212,214,215); margin-right: 16px\">{{ (auth | async)?.auth.displayName }}</div>\n                    <div md-icon-button [mdMenuTriggerFor]=\"account\" [ngStyle]=\"{'width': '70px', 'height': '70px', 'background': 'url(' + (auth | async)?.auth.photoURL + ') center/cover no-repeat', 'border':'4px solid darkgray', 'border-radius': '5px', 'cursor':'pointer'}\">\n                    </div>\n\n                    <div tourAnchor=\"login\">\n                        <md-menu #account=\"mdMenu\" y-axis=\"below\" x-axis=\"before\">\n                            <button md-menu-item (click)=\"signout()\">\n                            <md-icon>lock_outline</md-icon>\n                            <span>LOGOUT</span>\n                        </button>\n                        </md-menu>\n                    </div>\n\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n\n\n<!--<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"!isSigned\">-->\n<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"(auth | async) == null\">\n    <button md-icon-button [mdMenuTriggerFor]=\"menu\">\n        <md-icon>menu</md-icon>\n    </button>\n\n    <md-menu #menu=\"mdMenu\">\n        <button md-menu-item routerLink=\"/login\">\n            <md-icon>lock_open</md-icon>\n            <span>LOGIN</span>\n        </button>\n    </md-menu>\n    &nbsp; &nbsp;\n    <img class=\"logo\" src=\"assets/images/logo.png\" />\n</md-toolbar>\n\n<!--<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"!isSigned\">-->\n<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"(auth | async) == null\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 app-header\">\n            <div class=\"left\">\n                <div style=\"display:inline-block\">\n                    <img class=\"logo\" src=\"assets/images/logo.png\" />\n                </div>\n            </div>\n            <div class=\"right\" style=\"padding-top: 60px\">\n                <a class=\"ui orange button\" style=\"font-size:16px; height:40px\" routerLink=\"/login\">LOGIN</a>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"container-fluid\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 app-footer\">\n            <h2> © 2017 All rights reserved. Viven Health, Inc. </h2>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
 /***/ 677:
 /***/ (function(module, exports) {
 
-module.exports = "<app-header tabIndex=\"0\"> </app-header>\n<tour-step-template></tour-step-template>\n\n<div class=\"container-fluid\">\n    <!--tourAnchor-->\n    <div tourAnchor=\"welcome\">\n        <div class=\"row\">\n\n            <!--<div tourAnchor=\"welcome\">\n            <div class=\"col-xs-12\" id=\"welcome\">\n                <div style=\"margin: 1em 0em; padding: 2.0em; border: 1em solid #fd582a\">\n                    <span class=\"welcome\"> Helping Employees become healthier is <span style=\"color: #fd582a\"> the single most powerful investment </span> a company can make </span>\n                </div>\n            </div>\n        </div>-->\n\n            <div class=\"col-xs-12 col-sm-6 animated fadeInLeft section\">\n                <!--<div style=\"width:70%; margin-left:15%; padding:0px\" class=\"row panel\">-->\n                <div class=\"col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel\">\n                    <div class=\"col-xs-12 title\">\n                        <span> PROGRESS </span>\n                    </div>\n\n                    <div tourAnchor=\"progress\">\n                        <div class=\"col-xs-12\" style=\"text-align: center;\">\n                            <div style=\"width:100%; padding-top:70%\">\n                                <div style=\"position:absolute; left:0; top:0; bottom:0; right:0\">\n                                    <div style=\"display:flex; justify-content: center; align-items: center; height: 100%; width: 100%\">\n                                        <ons-progress-circular [value]=\"percent\" [secondaryValue]=\"100\" style=\"width:60%; height:90%\"></ons-progress-circular>\n                                    </div>\n                                </div>\n                                <div style=\"position:absolute; left:0; top:0; bottom:0; right:0\">\n                                    <div style=\"display:flex; justify-content: center; align-items: center; height: 100%; width: 100%\">\n                                        <h4 style=\"font-size: 28px; color:#283345\">{{percent}}%</h4>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n\n            <div class=\"col-xs-12 col-sm-6 animated fadeInUp section\">\n                <!--<div style=\"width:70%; margin-left:15%; padding:0px\" class=\"row panel\">-->\n                <div class=\"col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel\">\n                    <div class=\"col-xs-12 title\">\n                        <span> NEXT CASE</span>\n                    </div>\n\n                    <div tourAnchor=\"next_case\">\n                        <div class=\"col-xs-12\" style=\"text-align: center;\">\n                            <div style=\"width:100%; padding-top:70%\">\n                                <div style=\"position:absolute; left:0; top:0; bottom:0; right:0\">\n                                    <md-card *ngIf=\"nextCase!=null\" class=\"case-card col-xs-12\" (click)=\"launchCase(programName, nextCase?.$key, encryptedUid)\" style=\"width: 100%; height: 100%; padding:0; cursor:pointer\">\n                                        <img src=\"assets/images/{{nextCase?.case.thumb}}\" style=\"width: 100%; height: 100%\">\n                                        <!--<md-card-content>\n                                    <p>\n                                        {{nextCase?.case.title}}\n                                    </p>\n                                </md-card-content>-->\n                                    </md-card>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n        </div>\n    </div>\n    <!--/tourAnchor-->\n</div>\n\n<app-footer> </app-footer>"
+module.exports = "<ng-container appBadgeAward></ng-container>\n\n<!--<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"isSigned\">-->\n<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"(user | async) != null\">\n    <button md-icon-button [mdMenuTriggerFor]=\"menu\">\n        <md-icon>menu</md-icon>\n    </button>\n\n    <md-menu #menu=\"mdMenu\">\n        <button md-menu-item routerLink=\"/home\">\n            <md-icon>home</md-icon>\n            <span>HOME</span>\n        </button>\n        <button md-menu-item routerLink=\"/cases\">\n            <md-icon>slideshow</md-icon>\n            <span>PROGRAMS</span>\n        </button>\n        <button md-menu-item routerLink=\"/profile\">\n            <md-icon>person</md-icon>\n            <span>PROFILE</span>\n        </button>\n        <button md-menu-item routerLink=\"/support\">\n            <md-icon>help_outline</md-icon>\n            <span>SUPPORT</span>\n        </button>\n        <hr>\n        <button md-menu-item (click)=\"signout()\">\n            <md-icon>lock_outline</md-icon>\n            <span>LOGOUT</span>\n        </button>\n    </md-menu>\n    &nbsp; &nbsp;\n    <img class=\"logo\" src=\"assets/images/logo.png\" />\n</md-toolbar>\n\n<!--<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"isSigned\">-->\n<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"(user | async) != null\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 app-header\">\n            <div class=\"left\">\n                <div style=\"display:inline-block\">\n                    <img class=\"logo\" src=\"assets/images/logo.png\" />\n                </div>\n\n\n                <div style=\"display:inline-block; padding-left: 100px; \">\n                    <div class=\"ui secondary pointing menu\">\n                        <div tourAnchor=\"homepage\">\n                            <a class=\"item {{tabIndex == 0 && 'active'}}\" routerLink=\"/home\">\n                                HOME\n                            </a>\n                        </div>\n                        <div tourAnchor=\"programs\">\n                            <a class=\"item {{tabIndex == 1 && 'active'}}\" routerLink=\"/cases\">\n                            PROGRAMS\n                        </a>\n                        </div>\n                        <div tourAnchor=\"profile\">\n                            <a class=\"item {{tabIndex == 2 && 'active'}}\" routerLink=\"/profile\">\n                            YOUR PROFILE\n                        </a>\n                        </div>\n                        <a class=\"item {{tabIndex == 3 && 'active'}}\" routerLink=\"/support\">\n                            SUPPORT\n                        </a>\n                    </div>\n                </div>\n\n\n            </div>\n\n            <div class=\"right\">\n                <div style=\"display:flex; align-items: center; justify-content: center\">\n                    <div style=\"color:rgb(212,214,215); margin-right: 16px\">{{ (user | async)?.name }}</div>\n                    <div md-icon-button [mdMenuTriggerFor]=\"account\" [ngStyle]=\"{'width': '70px', 'height': '70px', 'background': 'url(' + (user | async)?.picture + ') center/cover no-repeat', 'border':'4px solid darkgray', 'border-radius': '5px', 'cursor':'pointer'}\">\n                    </div>\n\n                    <div tourAnchor=\"login\">\n                        <md-menu #account=\"mdMenu\" y-axis=\"below\" x-axis=\"before\">\n                            <button md-menu-item (click)=\"signout()\">\n                            <md-icon>lock_outline</md-icon>\n                            <span>LOGOUT</span>\n                        </button>\n                        </md-menu>\n                    </div>\n\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n\n\n<!--<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"!isSigned\">-->\n<md-toolbar color='primary' style=\"display:flex\" class=\"visible-sm visible-xs\" *ngIf=\"(user | async) == null\">\n    <button md-icon-button [mdMenuTriggerFor]=\"menu\">\n        <md-icon>menu</md-icon>\n    </button>\n\n    <md-menu #menu=\"mdMenu\">\n        <button md-menu-item routerLink=\"/login\">\n            <md-icon>lock_open</md-icon>\n            <span>LOGIN</span>\n        </button>\n    </md-menu>\n    &nbsp; &nbsp;\n    <img class=\"logo\" src=\"assets/images/logo.png\" />\n</md-toolbar>\n\n<!--<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"!isSigned\">-->\n<div class=\"container-fluid visible-lg visible-md\" *ngIf=\"(user | async) == null\">\n    <div class=\"row\">\n        <div class=\"col-xs-12 app-header\">\n            <div class=\"left\">\n                <div style=\"display:inline-block\">\n                    <img class=\"logo\" src=\"assets/images/logo.png\" />\n                </div>\n            </div>\n            <div class=\"right\" style=\"padding-top: 60px\">\n                <a class=\"ui orange button\" style=\"font-size:16px; height:40px\" routerLink=\"/login\">LOGIN</a>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
 /***/ 678:
 /***/ (function(module, exports) {
 
-module.exports = "<app-header tabIndex=\"0\"> </app-header>\n\n<div class=\"back\">\n    <div class=\"ourword\">\n        <span class=\"employee\"> Helping Employees </span>\n        <br>\n        <span class=\"tobe\"> to be </span>\n        <span class=\"healthier\"> Healthier </span>\n    </div>\n</div>\n\n<app-footer> </app-footer>"
+module.exports = "<app-header tabIndex=\"0\"> </app-header>\n<tour-step-template></tour-step-template>\n\n<div class=\"container-fluid\">\n    <!--tourAnchor-->\n    <div tourAnchor=\"welcome\">\n        <div class=\"row\">\n\n            <!--<div tourAnchor=\"welcome\">\n            <div class=\"col-xs-12\" id=\"welcome\">\n                <div style=\"margin: 1em 0em; padding: 2.0em; border: 1em solid #fd582a\">\n                    <span class=\"welcome\"> Helping Employees become healthier is <span style=\"color: #fd582a\"> the single most powerful investment </span> a company can make </span>\n                </div>\n            </div>\n        </div>-->\n\n            <div class=\"col-xs-12 col-sm-6 animated fadeInLeft section\">\n                <!--<div style=\"width:70%; margin-left:15%; padding:0px\" class=\"row panel\">-->\n                <div class=\"col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel\">\n                    <div class=\"col-xs-12 title\">\n                        <span> PROGRESS </span>\n                    </div>\n\n                    <div tourAnchor=\"progress\">\n                        <div class=\"col-xs-12\" style=\"text-align: center;\">\n                            <div style=\"width:100%; padding-top:70%\">\n                                <div style=\"position:absolute; left:0; top:0; bottom:0; right:0\">\n                                    <div style=\"display:flex; justify-content: center; align-items: center; height: 100%; width: 100%\">\n                                        <ons-progress-circular [value]=\"percent\" [secondaryValue]=\"100\" style=\"width:60%; height:90%\"></ons-progress-circular>\n                                    </div>\n                                </div>\n                                <div style=\"position:absolute; left:0; top:0; bottom:0; right:0\">\n                                    <div style=\"display:flex; justify-content: center; align-items: center; height: 100%; width: 100%\">\n                                        <h4 style=\"font-size: 28px; color:#283345\">{{percent}}%</h4>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n\n            <div class=\"col-xs-12 col-sm-6 animated fadeInUp section\">\n                <!--<div style=\"width:70%; margin-left:15%; padding:0px\" class=\"row panel\">-->\n                <div class=\"col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 panel\">\n                    <div class=\"col-xs-12 title\">\n                        <span> NEXT CASE</span>\n                    </div>\n\n                    <div tourAnchor=\"next_case\">\n                        <div class=\"col-xs-12\" style=\"text-align: center;\">\n                            <div style=\"width:100%; padding-top:70%\">\n                                <div style=\"position:absolute; left:0; top:0; bottom:0; right:0\">\n                                    <md-card *ngIf=\"nextCase!=null\" class=\"case-card col-xs-12\" (click)=\"launchCase(programName, nextCase?.$key, encryptedUid)\" style=\"width: 100%; height: 100%; padding:0; cursor:pointer\">\n                                        <img src=\"assets/images/{{nextCase?.case.thumb}}\" style=\"width: 100%; height: 100%\">\n                                        <!--<md-card-content>\n                                    <p>\n                                        {{nextCase?.case.title}}\n                                    </p>\n                                </md-card-content>-->\n                                    </md-card>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n        </div>\n    </div>\n    <!--/tourAnchor-->\n</div>\n\n<app-footer> </app-footer>"
 
 /***/ }),
 
 /***/ 679:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"body\">\n</div>\n<div class=\"grad\"></div>\n<div class=\"container-fluid\">\n    <div class=\"col-xs-11 login animated zoomIn\" style=\"text-align: center\">\n        <a routerLink=\"/\"><img src=\"assets/images/logo.png\" style=\"margin-top: -150px; width: 100%; max-width: 300px\" /></a>\n        <input type=\"email\" placeholder=\"email\" name=\"email\" [(ngModel)]=\"model.email\"><br>\n        <input type=\"password\" placeholder=\"password\" name=\"password\" [(ngModel)]=\"model.password\"><br>\n        <input type=\"button\" value=\"Login\" (click)=\"login()\">\n        <div style=\"color: white; padding: 15px\">\n            Don't have an account? &nbsp; <a style=\"color: #fd582a\" routerLink=\"/signup\">Get Started</a>\n        </div>\n        <button (click)=\"facebookLogin()\" type=\"button\" class=\"btn btn-fb\" style=\"background:rgb(59,89,152);font-size: 14px;\"><i class=\"fa fa-facebook left\" style=\"font-size: 14px;\"></i> Facebook</button>\n        <button (click)=\"gplusLogin()\" type=\"button\" class=\"btn btn-gplus\" style=\"background:rgb(221,75,57);font-size: 14px;\"><i class=\"fa fa-google-plus left\" style=\"font-size: 14px;\"></i> Google +</button>\n        <div *ngIf=\"error!=null\" style=\"color:blue\">\n            <br> {{error.message}}\n        </div>\n    </div>\n</div>"
+module.exports = "<app-header tabIndex=\"0\"> </app-header>\n\n<div class=\"back\">\n    <div class=\"ourword\">\n        <span class=\"employee\"> Helping Employees </span>\n        <br>\n        <span class=\"tobe\"> to be </span>\n        <span class=\"healthier\"> Healthier </span>\n    </div>\n</div>\n\n<app-footer> </app-footer>"
 
 /***/ }),
 
@@ -2160,7 +2122,7 @@ module.exports = "<div class=\"body\">\n</div>\n<div class=\"grad\"></div>\n<div
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_angularfire2__ = __webpack_require__(50);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(685);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(425);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ProfileService; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -2175,68 +2137,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-// const badges = [
-//   {
-//     name: "The Beginner",
-//     image: "01.png",
-//   },
-//   {
-//     name: "The Cleaner",
-//     image: "02.png",
-//   },
-//   {
-//     name: "Sanitizer Adept",
-//     image: "03.png",
-//   },
-//   {
-//     name: "The Health Seeker",
-//     image: "04.png",
-//   },
-//   {
-//     name: "Flu Fighter",
-//     image: "05.png",
-//   },
-//   {
-//     name: "Master Cleaner",
-//     image: "06.png",
-//   },
-//   {
-//     name: "Hand Hygiene Pro",
-//     image: "07.png",
-//   },
-//   {
-//     name: "Sanitizing Expert",
-//     image: "08.png",
-//   },
-//   {
-//     name: "The Alchemist",
-//     image: "09.png",
-//   },
-//   {
-//     name: "Flu Fighter Legend",
-//     image: "10.png",
-//   },
-//   {
-//     name: "Healthy and Whole",
-//     image: "11.png",
-//   },
-//   {
-//     name: "Hand Hygiene Expert",
-//     image: "12.png",
-//   },
-//   {
-//     name: "Sanitizer Legend",
-//     image: "13.png",
-//   },
-//   {
-//     name: "Flu Fighter Hero",
-//     image: "14.png",
-//   },
-//   {
-//     name: "Germ Free Specialist",
-//     image: "15.png",
-//   },
-// ];
 var ProfileService = (function () {
     function ProfileService(af) {
         this.af = af;
@@ -2282,32 +2182,6 @@ var ProfileService = (function () {
                 });
                 return updateList;
             });
-            // return this.af.database.object(`users/${uid}/progress/actions`).map(function(actions){
-            //   let updateList = [];
-            //   if (!contains(badgeList, badges[0])) updateList.push(badges[0]);
-            //   if (actions['Sanitizing Wipes'] != undefined && actions['Sanitizing Wipes'] > 0)
-            //     if (!contains(badgeList, badges[1])) updateList.push(badges[1]);
-            //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] > 0)
-            //     if (!contains(badgeList, badges[2])) updateList.push(badges[2]);
-            //   if (actions['Phone'] != undefined)
-            //     if (!contains(badgeList, badges[3])) updateList.push(badges[3]);
-            //   if (actions['Sanitizing Wipes'] != undefined && actions['Sanitizing Wipes'] >= 10)
-            //     if (!contains(badgeList, badges[5])) updateList.push(badges[5]);
-            //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 5)
-            //     if (!contains(badgeList, badges[6])) updateList.push(badges[6]);
-            //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 10)
-            //     if (!contains(badgeList, badges[7])) updateList.push(badges[7]);
-            //   if (actions['Medicine'] != undefined && actions['Medicine'] >= 10)
-            //     if (!contains(badgeList, badges[8])) updateList.push(badges[8]);
-            //   if (actions['Wash Hands'] != undefined && actions['Wash Hands'] >= 20)
-            //     if (!contains(badgeList, badges[10])) updateList.push(badges[10]);
-            //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 20)
-            //     if (actions['Wash Hands'] != undefined && actions['Wash Hands'] >= 20)
-            //       if (!contains(badgeList, badges[11])) updateList.push(badges[11]);
-            //   if (actions['Hand Sanitizer'] != undefined && actions['Hand Sanitizer'] >= 50)
-            //     if (!contains(badgeList, badges[12])) updateList.push(badges[12]);
-            //   return updateList;
-            // });
         }.bind(this));
     };
     ProfileService.prototype.getProgramProgressPercent = function (uid, programName) {
@@ -2393,25 +2267,32 @@ var _a;
 /***/ 680:
 /***/ (function(module, exports) {
 
-module.exports = "<app-header tabIndex=\"2\"> </app-header>\n\n<div class=\"container-fluid\">\n    <div class=\"row profile\">\n        <div class=\"col-xs-12 col-md-6\" style=\"margin-top:20px; margin-bottom:20px\">\n            <div class=\"col-xs-12 contact-form info-panel\">\n                <div class=\"header\">General</div>\n                <div class=\"col-xs-12\" style=\"padding: 30px\">\n                    <span style=\"font-size: 28px\"> {{userName}} </span>\n                    <br>\n                    <!--<span style=\"color:#fd582a !important; font-size: 16px\"> Joined March 2017 </span>-->\n                </div>\n                <div class=\"col-xs-12\">\n                    <div style=\"width: 100%; padding-top: 70%;\">\n                        <div style=\"position: absolute; width: 100%; height: 100%; left:0; top: 0; bottom:0; right: 0;\">\n                            <div style=\"width: 100%; height: 100%; float:left\" [ngStyle]=\"{'background': 'url(' + photoURL + ') center/cover no-repeat'}\">\n                                <!--<div style=\"width: 75%; height: 100%; float:left\" [ngStyle]=\"{'background': 'url(' + photoURL + ') center/cover no-repeat'}\">-->\n                                <!--<img src=\"{{photoURL}}\" style=\"width: 100%; height: inherit;\">-->\n                            </div>\n                            <!--<div style=\"width: 25%; float:right; height: 100%\">\n                                <div class=\"userInfo-tile\" style=\"height: 33.3%\">\n                                    <div>\n                                        <span class=\"value\">3</span>\n                                        <br>\n                                        <span class=\"key\">LEVEL</span>\n                                    </div>\n                                </div>\n                                <div class=\"userInfo-tile\" style=\"height: 33.3%; border-top: 2px solid #c9cdd0\">\n                                    <div>\n                                        <span class=\"value\">12</span>\n                                        <br>\n                                        <span class=\"key\">BADGES</span>\n                                    </div>\n                                </div>\n                                <div class=\"userInfo-tile\" style=\"height: 33.3%; border-top: 2px solid #c9cdd0\">\n                                    <div>\n                                        <span class=\"value\">0</span>\n                                        <br>\n                                        <span class=\"key\">REWARDS</span>\n                                    </div>\n                                </div>\n                            </div>-->\n                        </div>\n                    </div>\n                </div>\n                <div class=\"col-xs-12\" style=\"margin-top:30px\">\n                    <span style=\"color:#283345; font-size: 20px;\">Progress:</span>\n                    <div class=\"progress\" style=\"margin-top:10px\">\n                        <div class=\"progress-bar\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"100\" [ngStyle]=\"{'width': (percent | async) + '%'}\" style=\"background-color: #283345\">\n                            <span>{{percent | async}}%</span>\n                        </div>\n                    </div>\n                </div>\n                <!--<div class=\"col-xs-12 vertical-center\">\n                    <img src=\"assets/images/lock.png \" width=\"45\" style=\"margin-right: 3%\">\n                    <span style=\"color:#283345; font-size: 24px\">Unlock your <b>FREE Guide</b></span>\n                </div>-->\n\n            </div>\n        </div>\n\n        <div class=\"col-xs-12 col-md-6\" style=\"margin-top:20px; margin-bottom:20px\">\n            <div class=\"col-xs-12 contact-form info-panel\">\n                <div class=\"header\">Badges</div>\n                <br><br>\n\n                <div class=\"col-xs-3\" *ngFor=\"let badge of allBadges\" style=\"display: inline-block; text-align: center\" (click)=\"launchModal()\">\n                    <app-badge-item [badge]=\"badge\"> </app-badge-item>\n                </div>\n\n                <br><br>\n            </div>\n        </div>\n    </div>\n</div>\n\n<!--<div class=\"ui basic modal\">\n    <div class=\"ui icon header\">\n        <i class=\"archive icon\"></i> Archive Old Messages\n    </div>\n    <div class=\"content\">\n        <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\n    </div>\n    <div class=\"actions\">\n        <div class=\"ui red basic cancel inverted button\">\n            <i class=\"remove icon\"></i> No\n        </div>\n        <div class=\"ui green ok inverted button\">\n            <i class=\"checkmark icon\"></i> Yes\n        </div>\n    </div>\n</div>-->\n\n<app-footer> </app-footer>"
+module.exports = "<div class=\"body\">\n</div>\n<div class=\"grad\"></div>\n<div class=\"container-fluid\">\n    <div class=\"col-xs-11 login animated zoomIn\" style=\"text-align: center\">\n        <a routerLink=\"/\"><img src=\"assets/images/logo.png\" style=\"margin-top: -150px; width: 100%; max-width: 300px\" /></a>\n        <input type=\"email\" placeholder=\"email\" name=\"email\" [(ngModel)]=\"model.email\"><br>\n        <input type=\"password\" placeholder=\"password\" name=\"password\" [(ngModel)]=\"model.password\"><br>\n        <input type=\"button\" value=\"Login\" (click)=\"login()\">\n        <div style=\"color: white; padding: 15px\">\n            Don't have an account? &nbsp; <a style=\"color: #fd582a\" routerLink=\"/signup\">Get Started</a>\n        </div>\n        <button (click)=\"facebookLogin()\" type=\"button\" class=\"btn btn-fb\" style=\"background:rgb(59,89,152);font-size: 14px;\"><i class=\"fa fa-facebook left\" style=\"font-size: 14px;\"></i> Facebook</button>\n        <button (click)=\"gplusLogin()\" type=\"button\" class=\"btn btn-gplus\" style=\"background:rgb(221,75,57);font-size: 14px;\"><i class=\"fa fa-google-plus left\" style=\"font-size: 14px;\"></i> Google +</button>\n        <div *ngIf=\"error!=null\" style=\"color:blue\">\n            <br> {{error.message}}\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
 /***/ 681:
 /***/ (function(module, exports) {
 
-module.exports = ""
+module.exports = "<app-header tabIndex=\"2\"> </app-header>\n\n<div class=\"container-fluid\">\n    <div class=\"row profile\">\n        <div class=\"col-xs-12 col-md-6\" style=\"margin-top:20px; margin-bottom:20px\">\n            <div class=\"col-xs-12 contact-form info-panel\">\n                <div class=\"header\">General</div>\n                <div class=\"col-xs-12\" style=\"padding: 30px\">\n                    <span style=\"font-size: 28px\"> {{userName}} </span>\n                    <br>\n                    <!--<span style=\"color:#fd582a !important; font-size: 16px\"> Joined March 2017 </span>-->\n                </div>\n                <div class=\"col-xs-12\">\n                    <div style=\"width: 100%; padding-top: 70%;\">\n                        <div style=\"position: absolute; width: 100%; height: 100%; left:0; top: 0; bottom:0; right: 0;\">\n                            <div style=\"width: 100%; height: 100%; float:left\" [ngStyle]=\"{'background': 'url(' + photoURL + ') center/cover no-repeat'}\">\n                                <!--<div style=\"width: 75%; height: 100%; float:left\" [ngStyle]=\"{'background': 'url(' + photoURL + ') center/cover no-repeat'}\">-->\n                                <!--<img src=\"{{photoURL}}\" style=\"width: 100%; height: inherit;\">-->\n                            </div>\n                            <!--<div style=\"width: 25%; float:right; height: 100%\">\n                                <div class=\"userInfo-tile\" style=\"height: 33.3%\">\n                                    <div>\n                                        <span class=\"value\">3</span>\n                                        <br>\n                                        <span class=\"key\">LEVEL</span>\n                                    </div>\n                                </div>\n                                <div class=\"userInfo-tile\" style=\"height: 33.3%; border-top: 2px solid #c9cdd0\">\n                                    <div>\n                                        <span class=\"value\">12</span>\n                                        <br>\n                                        <span class=\"key\">BADGES</span>\n                                    </div>\n                                </div>\n                                <div class=\"userInfo-tile\" style=\"height: 33.3%; border-top: 2px solid #c9cdd0\">\n                                    <div>\n                                        <span class=\"value\">0</span>\n                                        <br>\n                                        <span class=\"key\">REWARDS</span>\n                                    </div>\n                                </div>\n                            </div>-->\n                        </div>\n                    </div>\n                </div>\n                <div class=\"col-xs-12\" style=\"margin-top:30px\">\n                    <span style=\"color:#283345; font-size: 20px;\">Progress:</span>\n                    <div class=\"progress\" style=\"margin-top:10px\">\n                        <div class=\"progress-bar\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"100\" [ngStyle]=\"{'width': (percent | async) + '%'}\" style=\"background-color: #283345\">\n                            <span>{{percent | async}}%</span>\n                        </div>\n                    </div>\n                </div>\n                <!--<div class=\"col-xs-12 vertical-center\">\n                    <img src=\"assets/images/lock.png \" width=\"45\" style=\"margin-right: 3%\">\n                    <span style=\"color:#283345; font-size: 24px\">Unlock your <b>FREE Guide</b></span>\n                </div>-->\n\n            </div>\n        </div>\n\n        <div class=\"col-xs-12 col-md-6\" style=\"margin-top:20px; margin-bottom:20px\">\n            <div class=\"col-xs-12 contact-form info-panel\">\n                <div class=\"header\">Badges</div>\n                <br><br>\n\n                <div class=\"col-xs-3\" *ngFor=\"let badge of allBadges\" style=\"display: inline-block; text-align: center\" (click)=\"launchModal()\">\n                    <app-badge-item [badge]=\"badge\"> </app-badge-item>\n                </div>\n\n                <br><br>\n            </div>\n        </div>\n    </div>\n</div>\n\n<!--<div class=\"ui basic modal\">\n    <div class=\"ui icon header\">\n        <i class=\"archive icon\"></i> Archive Old Messages\n    </div>\n    <div class=\"content\">\n        <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\n    </div>\n    <div class=\"actions\">\n        <div class=\"ui red basic cancel inverted button\">\n            <i class=\"remove icon\"></i> No\n        </div>\n        <div class=\"ui green ok inverted button\">\n            <i class=\"checkmark icon\"></i> Yes\n        </div>\n    </div>\n</div>-->\n\n<app-footer> </app-footer>"
 
 /***/ }),
 
 /***/ 682:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"body\">\n</div>\n<div class=\"grad\"></div>\n<div class=\"container-fluid\">\n    <div class=\"col-xs-11 login animated fadeInDown\" style=\"text-align: center\">\n        <a routerLink=\"/\"><img src=\"assets/images/logo.png\" style=\"margin-top: -150px; width: 100%; max-width: 300px\" /></a>\n        <input type=\"text\" placeholder=\"first name\" name=\"firstname\" [(ngModel)]=\"model.firstname\"><br>\n        <input type=\"text\" placeholder=\"last name\" name=\"lastname\" [(ngModel)]=\"model.lastname\"><br>\n        <input type=\"email\" placeholder=\"email\" name=\"email\" [(ngModel)]=\"model.email\"><br>\n        <input type=\"password\" placeholder=\"password\" name=\"password\" [(ngModel)]=\"model.password\"><br>\n        <input type=\"button\" value=\"Signup\" (click)=\"signup()\">\n        <div style=\"color: white; padding: 15px\">\n            I already have an account. &nbsp; <a style=\"color: #fd582a\" routerLink=\"/login\">Cancel</a>\n        </div>\n        <div *ngIf=\"error!=null\" style=\"color:blue\">\n            {{error.message}}\n        </div>\n    </div>\n</div>"
+module.exports = ""
 
 /***/ }),
 
 /***/ 683:
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"body\">\n</div>\n<div class=\"grad\"></div>\n<div class=\"container-fluid\">\n    <div class=\"col-xs-11 login animated fadeInDown\" style=\"text-align: center\">\n        <a routerLink=\"/\"><img src=\"assets/images/logo.png\" style=\"margin-top: -150px; width: 100%; max-width: 300px\" /></a>\n        <input type=\"text\" placeholder=\"first name\" name=\"firstname\" [(ngModel)]=\"model.firstname\"><br>\n        <input type=\"text\" placeholder=\"last name\" name=\"lastname\" [(ngModel)]=\"model.lastname\"><br>\n        <input type=\"email\" placeholder=\"email\" name=\"email\" [(ngModel)]=\"model.email\"><br>\n        <input type=\"password\" placeholder=\"password\" name=\"password\" [(ngModel)]=\"model.password\"><br>\n        <input type=\"button\" value=\"Signup\" (click)=\"signup()\">\n        <div style=\"color: white; padding: 15px\">\n            I already have an account. &nbsp; <a style=\"color: #fd582a\" routerLink=\"/login\">Cancel</a>\n        </div>\n        <div *ngIf=\"error!=null\" style=\"color:blue\">\n            {{error.message}}\n        </div>\n    </div>\n</div>"
+
+/***/ }),
+
+/***/ 684:
 /***/ (function(module, exports) {
 
 module.exports = "<app-header tabIndex=\"3\"> </app-header>\n\n<div class=\"container-fluid\">\n    <div class=\"row\">\n\n        <div class=\"col-xs-12 col-md-7\">\n            <div class=\"col-xs-12\" *ngFor=\"let faqItem of items | async\">\n                <app-faq-item [q]=\"faqItem.q\" [a]=\"faqItem.a\"> </app-faq-item>\n            </div>\n        </div>\n\n        <div class=\"col-xs-12 col-md-5\">\n            <div class=\"contact-form\">\n                <form>\n                    <div class=\"form-group\">\n                        <label for=\"name\">Name</label>\n                        <input type=\"text\" class=\"form-control\" id=\"name\" placeholder=\"Enter name\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"email\">Email</label>\n                        <input type=\"email\" class=\"form-control\" id=\"email\" placeholder=\"Enter email\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subject\">Subject</label>\n                        <input type=\"text\" class=\"form-control\" id=\"subject\" placeholder=\"Enter subject title\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"message\">Message</label>\n                        <textarea class=\"form-control\" id=\"message\" rows=\"4\" cols=\"50\" placeholder=\"Enter message content\"> </textarea>\n                    </div>\n                    <div class=\"form-group\" style=\"text-align: right\">\n                        <button type=\"submit\" class=\"btn btn-default\">Send Message</button>\n                    </div>\n                </form>\n            </div>\n        </div>\n\n    </div>\n</div>\n\n<app-footer> </app-footer>"
@@ -2421,7 +2302,7 @@ module.exports = "<app-header tabIndex=\"3\"> </app-header>\n\n<div class=\"cont
 /***/ 969:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(481);
+module.exports = __webpack_require__(482);
 
 
 /***/ })

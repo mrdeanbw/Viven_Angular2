@@ -1,87 +1,124 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
-// import { Subject } from 'rxjs';
-import { Observable} from 'rxjs';
-// import 'rxjs/add/operator/toPromise';
+import { Observable, Observer } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable()
 export class UserService {
   private isSignupProcess: boolean = false;
   private model: any;
-  // private authState: Subject<any> = new Subject();
   private getUserURL = '/api/getVar';
   private headers = new Headers({'Content-Type': 'application/json'});
   private signed: boolean = false;
   private firstSigned: boolean = false;
-  // private currentAuth: any = null;
-
-  // getAuthState(){
-  //   return this.authState;
-  // }
+  private user: any = null;
 
   isFirstSigned(){
     return this.firstSigned;
   }
 
-  getAuth(){
-    return this.af.auth;
+  getUser(){
+    return this.user;
   }
 
   constructor(private af: AngularFire, private http: Http, private router: Router) {
-    this.af.auth.subscribe(auth => {
-      console.log(auth);
 
-      if (this.isSignupProcess) {
-        this.model.firstname == undefined && (this.model.firstname = '');
-        this.model.lastname == undefined && (this.model.lastname = '');
+    this.user = this.af.auth.switchMap(auth => {
 
-        auth.auth.updateProfile(
-          {
-            displayName: ((this.model.firstname as String).trim() + ' ' + (<String>this.model.lastname).trim()).trim(),
-            photoURL: "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"
-          }
-        ).then(function(){
-          this.isSignupProcess = false;
-          // this.authState.next(auth);
-          // this.currentAuth = auth;
-        }.bind(this));
-
-        this.firstSigned = true;
-      } else {
-        // this.authState.next(auth);
-        // this.currentAuth = auth;
-        this.firstSigned = false;
-      }
-    });
-
-     this.af.auth.subscribe(auth => {
-      // console.log(auth);
-      if (auth != null) {
-        this.getUser(auth.auth.email).subscribe(function(user){
-          if(user == null) {
-            this.createUser({
-              id: auth.uid,
-              email: auth.auth.email,
-              name: auth.auth.displayName,
-              picture: auth.auth.photoURL,
-            }).then(function(){
-              this.router.navigateByUrl('/home');
-            }.bind(this));
-          } else {
-            if (router.url=="/login" || router.url=="/" || router.url=="/signup") {
-              this.router.navigateByUrl('/home');
-            }
-          }
-        }.bind(this));
+      if(auth != null) {
         this.signed = true;
+        if (this.isSignupProcess) {
+          this.model.firstname == undefined && (this.model.firstname = '');
+          this.model.lastname == undefined && (this.model.lastname = '');
+
+          return Observable.fromPromise(<Promise<any>>auth.auth.updateProfile(
+            {
+              displayName: ((this.model.firstname as String).trim() + ' ' + (<String>this.model.lastname).trim()).trim(),
+              photoURL: "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"
+            }
+          )).switchMap(() => {
+            this.isSignupProcess = false;
+            this.firstSigned = true;
+            return this.getUserInDB(auth);
+          });
+
+        } else {
+          this.firstSigned = false;
+          return this.getUserInDB(auth);
+        }
       } else {
-        this.router.navigateByUrl('/');
         this.signed = false;
+        return Observable.create((observer : Observer<any>) => { observer.next(null); observer.complete()});
       }
     });
-  
+
+    this.user.subscribe((user) => console.log(user));
+  }
+
+  getUserInDB(auth: any) {
+    return this.findUserInDB(auth.auth.email).switchMap((user) => {
+      if (user == null) {
+        this.router.navigateByUrl('/home');
+
+        return this.createUserInDB({
+          id: auth.uid,
+          email: auth.auth.email,
+          name: auth.auth.displayName,
+          picture: auth.auth.photoURL,
+        });
+        
+      } else {
+        if (this.router.url=="/login" || this.router.url=="/" || this.router.url=="/signup") {
+          this.router.navigateByUrl('/home');
+        }
+
+        return Observable.create((observer) => { observer.next(user); observer.complete()});
+      }
+    });
+  }
+
+  findUserInDB(email: String) {
+    let users: any;
+    users = this.af.database.list('/users');
+
+    return users.map(function(userList){
+      let foundUser = null;
+
+      userList.forEach(function(value, index){
+        if (value.email == email) {
+          foundUser = value;
+        }
+      });
+
+      if (foundUser == null) return null;
+
+      return {
+              id: foundUser.id,
+              email: foundUser.email,
+              name: foundUser.name,
+              picture: foundUser.picture,
+            };
+    });
+  }
+
+  createUserInDB(user : any) {
+    let initialProgress : any = {};
+    let _user = user;
+
+    initialProgress.next_action = {
+        case: "-JkEYXe6hIrueGO5F25Y",
+        program: "Cold and Flu"
+    };
+    initialProgress.programs = {};
+    initialProgress.programs["Cold and Flu"] = {};
+    initialProgress.programs["Cold and Flu"].casesCompleted = ["null"];
+    initialProgress.programs["Cold and Flu"].isComplete = false;
+
+    user.progress = initialProgress;
+    user.company = "default";
+
+    return Observable.fromPromise(<Promise<any>>(this.af.database.object('/users/' + user.id).set(user))).map(() => _user);
   }
 
   emailLogin(model: any) {
@@ -128,58 +165,16 @@ export class UserService {
     });
   }
 
-  getUser(email: String) {
-    let users: any;
-    users = this.af.database.list('/users');
-
-    return users.map(function(userList){
-      let foundUser = null;
-
-      userList.forEach(function(value, index){
-        if (value.email == email) {
-          foundUser = value;
-        }
-      });
-
-      return foundUser;
-    });
-  }
-
-  // handleError(){
-  //   console.log('http error!');
-  // }
-
-  createUser(user: any)
-  {
-        let initialProgress:any = {};
-        initialProgress.next_action = {
-            case: "-JkEYXe6hIrueGO5F25Y",
-            program: "Cold and Flu"
-        };
-        initialProgress.programs = {};
-        initialProgress.programs["Cold and Flu"] = {};
-        initialProgress.programs["Cold and Flu"].casesCompleted = ["null"];
-        initialProgress.programs["Cold and Flu"].isComplete = false;
-
-        user.progress = initialProgress
-        user.company = "default";
-
-        return this.af.database.object('/users/' + user.id).set(user);
-  }
-
   signout() {
     this.router.navigateByUrl('/');
 		return this.af.auth.logout();
 	}
 
   isSigned() {
-    // return this.currentAuth != null;
     return this.signed;
   }
 
   getEncryptedUid(uid) {
-  //: Promise<any> {
-    // console.log('http requesting...');
 
     let user = {id: uid};
 
@@ -188,12 +183,5 @@ export class UserService {
       .map(function(res){
         return res.json().id;
       });
-      // .toPromise()
-      // .then(res => res.json())
-      // .catch(this.handleError);
   }
-
-  // getCurrentUser(){
-  //   return this.currentAuth;
-  // }
 }

@@ -15,9 +15,9 @@ export class BadgeAwardDirective {
   dialogRef: MdDialogRef<BadgeComponent>;
 
   constructor(private ps: ProfileService, private us: UserService, public dialog: MdDialog) { 
-    us.getAuth().subscribe(function(auth){
-      if(auth != null) {
-        this.uid = auth.uid;
+    us.getUser().subscribe(function(user){
+      if(user != null) {
+        this.uid = user.uid;
         this.getProfile();
       }
     }.bind(this));

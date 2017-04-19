@@ -108,9 +108,9 @@ export class HomeComponent implements OnInit {
     }
 
 
-    us.getAuth().subscribe(function(auth){
-      if(auth != null) {
-        this.uid = auth.uid;
+    us.getUser().subscribe(function(user){
+      if(user != null) {
+        this.uid = user.uid;
         us.getEncryptedUid(this.uid).subscribe(value => this.encryptedUid = value);
         this.getProfile();
       }
