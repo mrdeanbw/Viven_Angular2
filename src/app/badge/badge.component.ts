@@ -4,7 +4,7 @@ import { MdDialogRef, MdDialog, MdDialogConfig } from '@angular/material';
 @Component({
   selector: 'app-badge',
   templateUrl: './badge.component.html',
-  styleUrls: ['./badge.component.css'],
+  styleUrls: ['./badge.component.scss'],
 })
 export class BadgeComponent implements OnInit {
   public badge: any;

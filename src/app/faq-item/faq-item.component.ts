@@ -13,7 +13,7 @@ function guid() {
 @Component({
   selector: 'app-faq-item',
   templateUrl: './faq-item.component.html',
-  styleUrls: ['./faq-item.component.css']
+  styleUrls: ['./faq-item.component.scss']
 })
 export class FaqItemComponent implements OnInit {
   @Input() q: string;

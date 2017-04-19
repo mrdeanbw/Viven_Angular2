@@ -26,7 +26,6 @@ import { ContentComponent } from './content/content.component';
 import { LandingComponent } from './landing/landing.component';
 import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
-import { ProgramsComponent } from './programs/programs.component';
 import { SupportComponent } from './support/support.component';
 import { FaqItemComponent } from './faq-item/faq-item.component';
 import { CasesComponent } from './cases/cases.component';
@@ -45,7 +44,6 @@ import { BadgeItemComponent } from './badge-item/badge-item.component';
     LandingComponent,
     HomeComponent,
     FooterComponent,
-    ProgramsComponent,
     SupportComponent,
     FaqItemComponent,
     CasesComponent,

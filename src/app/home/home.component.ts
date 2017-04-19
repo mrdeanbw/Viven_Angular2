@@ -11,7 +11,7 @@ import { TourService } from 'ng2-tour';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  styleUrls: ['./home.component.scss'],
   // providers: [ ProfileService ]
 })
 export class HomeComponent implements OnInit {

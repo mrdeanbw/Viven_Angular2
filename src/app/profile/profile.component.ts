@@ -10,7 +10,7 @@ declare var $: any;
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css'],
+  styleUrls: ['./profile.component.scss'],
   // providers: [ ProfileService ]
 })
 export class ProfileComponent implements OnInit {

@@ -10,7 +10,7 @@ import { Router, NavigationExtras } from '@angular/router';
 @Component({
   selector: 'app-cases',
   templateUrl: './cases.component.html',
-  styleUrls: ['./cases.component.css'],
+  styleUrls: ['./cases.component.scss'],
   providers: [CaseService],
 })
 export class CasesComponent implements OnInit, AfterViewInit {
